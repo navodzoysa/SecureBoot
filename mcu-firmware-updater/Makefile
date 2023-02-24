@@ -125,7 +125,6 @@ $(BUILD_DIR)/$(PROJECT)-%.bin: $(BUILD_DIR)/$(PROJECT)-%.elf $(PK_PEM_PATH)
 	$(ECHO) "  PATCH	  $@"
 	$(Q)$(PYTHON) patch_image_header.py $@ $(PK_PEM_PATH) > /dev/null
 
-# https://interrupt.memfault.com/blog/gnu-binutils#converting-binaries-into-an-object-o-file
 $(BUILD_DIR)/patch_bin.o: $(BUILD_DIR)/patch.bin
 	$(Q)$(OCPY) -I binary -O elf32-littlearm -B arm --add-section app_patch=$< $< $@
 

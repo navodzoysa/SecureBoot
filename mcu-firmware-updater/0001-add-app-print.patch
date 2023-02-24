@@ -1,7 +1,7 @@
-diff --git mcu-firmware-updater/application.c mcu-firmware-updater/application.c
+diff --git SecureBoot/mcu-firmware-updater/application.c SecureBoot/mcu-firmware-updater/application.c
 index d126b11..b468869 100644
---- mcu-firmware-updater/application.c
-+++ mcu-firmware-updater/application.c
+--- SecureBoot/mcu-firmware-updater/application.c
++++ SecureBoot/mcu-firmware-updater/application.c
 @@ -40,6 +40,8 @@ int main(void) {
      };
      shell_boot(&shell_impl);
