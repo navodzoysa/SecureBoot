@@ -3,6 +3,7 @@ import { ThemeProvider } from './components/ThemeProvider';
 import { useState } from 'react';
 import {
   AppShell,
+  Avatar,
   Navbar,
   Header,
   Footer,
@@ -10,8 +11,11 @@ import {
   MediaQuery,
   Burger,
   useMantineTheme,
+  Group,
+  Code,
 } from '@mantine/core';
 import DeviceTable from './components/DeviceTable';
+import Logo from './assets/images/boot-icon.png';
 
 function App() {
 const theme = useMantineTheme();
@@ -34,7 +38,9 @@ const [opened, setOpened] = useState(false);
       footer={
         <Footer height={60} p="md">
           <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <span>Secureboot | 2023</span>
+            <Text color="dimmed" size="sm">
+              SecureBoot © 2023 navodzoysa. All rights reserved.
+            </Text>
           </div>
         </Footer>
       }
@@ -50,8 +56,11 @@ const [opened, setOpened] = useState(false);
                 mr="xl"
               />
             </MediaQuery>
-
-            <Text>SecureBoot</Text>
+            <Group position="apart">
+              <Avatar src={Logo}/>
+              <Text>SecureBoot</Text>
+              <Code sx={{ fontWeight: 700 }}>v1.0.0</Code>
+            </Group>
           </div>
         </Header>
       }
