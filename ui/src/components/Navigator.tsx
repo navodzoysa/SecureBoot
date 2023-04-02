@@ -1,14 +1,7 @@
 import { useState } from 'react';
-import { createStyles, Navbar, Group, Code, getStylesRef, rem } from '@mantine/core';
+import { createStyles, Navbar, getStylesRef, rem } from '@mantine/core';
 import {
-  IconBellRinging,
-  IconFingerprint,
-  IconKey,
   IconSettings,
-  Icon2fa,
-  IconDatabaseImport,
-  IconReceipt2,
-  IconSwitchHorizontal,
   IconLogout,
   IconDeviceDesktopAnalytics,
   IconCpu,
@@ -72,10 +65,6 @@ const useStyles = createStyles((theme) => ({
 const data = [
   { link: '', label: 'Devices', icon: IconDeviceDesktopAnalytics },
   { link: '', label: 'Firmware', icon: IconCpu  },
-  // { link: '', label: 'Security', icon: IconFingerprint },
-  // { link: '', label: 'SSH Keys', icon: IconKey },
-  // { link: '', label: 'Databases', icon: IconDatabaseImport },
-  // { link: '', label: 'Authentication', icon: Icon2fa },
   { link: '', label: 'Settings', icon: IconSettings },
 ];
 
@@ -114,7 +103,7 @@ const [active, setActive] = useState('Devices');
           <span>Change account</span>
         </a> */}
 
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+        <a href="/#" className={classes.link} onClick={(event) => event.preventDefault()}>
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
         </a>
