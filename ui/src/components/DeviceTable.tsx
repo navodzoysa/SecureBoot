@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 export default function DeviceTable() {
 	const [deviceDetails, setDeviceDetails] = useState<any[]>([]);
 	function getDeviceDetails() {
-		axios.get('http://localhost:5000/api/devices')
+		axios.get('/api/devices')
 			.then(response => response.data)
 			.then((data) => {
 				setDeviceDetails(data);

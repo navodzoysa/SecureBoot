@@ -1,5 +1,4 @@
 import Navigator from './components/Navigator';
-import { ThemeProvider } from './components/ThemeProvider';
 import { useState } from 'react';
 import {
   AppShell,
