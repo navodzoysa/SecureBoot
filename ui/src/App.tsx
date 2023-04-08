@@ -17,6 +17,7 @@ import DeviceTable from './components/DeviceTable';
 import Logo from './assets/images/secureboot-logo.png';
 
 function App() {
+const APP_VERSION = process.env.REACT_APP_VERSION;
 const theme = useMantineTheme();
 const [opened, setOpened] = useState(false);
   return (
@@ -58,7 +59,7 @@ const [opened, setOpened] = useState(false);
             <Group position="apart">
               <Avatar src={Logo}/>
               <Text>SecureBoot</Text>
-              <Code sx={{ fontWeight: 700 }}>v1.0.0</Code>
+              <Code sx={{ fontWeight: 700 }}>v{APP_VERSION}</Code>
             </Group>
           </div>
         </Header>
