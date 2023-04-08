@@ -14,7 +14,7 @@ import {
   Code,
 } from '@mantine/core';
 import DeviceTable from './components/DeviceTable';
-import Logo from './assets/images/boot-icon.png';
+import Logo from './assets/images/secureboot-logo.png';
 
 function App() {
 const theme = useMantineTheme();
