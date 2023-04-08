@@ -19,8 +19,6 @@ export default function DeviceTable() {
 	}, [])
 	return (
 		<div>
-			{deviceDetails && deviceDetails.map((device, index) =>
-			<div key={index}>
 			<DataTable
 				withBorder
 				borderRadius="sm"
@@ -28,38 +26,30 @@ export default function DeviceTable() {
 				striped
 				highlightOnHover
 				// provide data
-				records={[
-					{ id: index, deviceName: device.deviceName, deviceStatus: device.deviceStatus, lastSynced: device.lastSynced, },
-					// more records...
-				]}
+				records={deviceDetails}
+				idAccessor="_id"
 				// define columns
 				columns={[
-					{
-					accessor: 'id',
-					// this column has a custom title
-					title: '#',
-					// right-align column
-					textAlignment: 'right',
-					},
 					{ accessor: 'deviceName' },
 					{
 					accessor: 'deviceStatus',
 					// this column has custom cell data rendering
 					render: ({ deviceStatus }) => (
-						<Text weight={700} color={deviceStatus === 'Active' ? 'green' : 'red'}>
+						<Text weight={700} color={deviceStatus === 'Up to date' ? 'green' : 'red'}>
 						{deviceStatus.toUpperCase()}
 						</Text>
 					),
 					},
-					{ accessor: 'lastSynced' },
+					{
+						accessor: 'lastActive',
+						title: 'Last Active'
+					},
 				]}
 				// execute this callback when a row is clicked
 				onRowClick={({ deviceName, deviceStatus, lastSynced }) =>
 					alert(`You clicked on ${deviceName}, an ${deviceStatus.toLowerCase()} device last seen ${lastSynced}`)
 				}
 			/>		
-			</div>
-			)}
 		</div>
 	);
 }
