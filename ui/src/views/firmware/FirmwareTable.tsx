@@ -4,11 +4,15 @@ import { useEffect, useState } from 'react';
 
 export default function FirmwareTable() {
 	const [firmwareList, setFirmwareList] = useState<any[]>([]);
-	function getFirmwareList() {
-		axios.get('/api/firmware')
+	const [fetching, isFetching] = useState(true);
+	async function getFirmwareList() {
+		isFetching(true);
+		// await new Promise(resolve => setTimeout(resolve, 1000));
+		await axios.get('/api/firmware')
 			.then(response => response.data)
 			.then((data) => {
 				setFirmwareList(data);
+				isFetching(false);
 			})
 	}
 	useEffect(() => {
@@ -17,8 +21,11 @@ export default function FirmwareTable() {
 	return (
 		<div>
 			<DataTable
+				minHeight={'83vh'}
+				fetching={fetching}
 				withBorder
-				borderRadius="sm"
+				borderRadius="md"
+				shadow="md"
 				withColumnBorders
 				striped
 				highlightOnHover

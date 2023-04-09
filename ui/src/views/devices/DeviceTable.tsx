@@ -5,11 +5,15 @@ import { useEffect, useState } from 'react';
 
 export default function DeviceTable() {
 	const [deviceDetails, setDeviceDetails] = useState<any[]>([]);
-	function getDeviceDetails() {
-		axios.get('/api/devices')
+	const [fetching, isFetching] = useState(true);
+	async function getDeviceDetails() {
+		isFetching(true);
+		// await new Promise(resolve => setTimeout(resolve, 1000));
+		await axios.get('/api/devices')
 			.then(response => response.data)
 			.then((data) => {
 				setDeviceDetails(data);
+				isFetching(false);
 			})
 	}
 	useEffect(() => {
@@ -18,8 +22,11 @@ export default function DeviceTable() {
 	return (
 		<div>
 			<DataTable
+				minHeight={'83vh'}
+				fetching={fetching}
 				withBorder
-				borderRadius="sm"
+				borderRadius="md"
+				shadow="md"
 				withColumnBorders
 				striped
 				highlightOnHover
