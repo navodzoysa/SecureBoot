@@ -5,10 +5,14 @@ const schema = mongoose.Schema({
 	deviceName: String,
 	deviceStatus: String,
 	deviceFirmwareVersion: String,
-	lastActive: {
-		type: Date,
-		default: new Date(),
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		required: true,
+		ref: 'User'
 	},
+},
+{
+	timestamps: true	
 })
 
 module.exports = mongoose.model("Device", schema);

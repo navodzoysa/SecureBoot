@@ -5,7 +5,15 @@ const schema = mongoose.Schema({
 	firmwareName: String,
 	firmwareSupportedDevice: String,
 	firmwareVersion: String,
-	firmwareBinary: String
+	firmwareBinary: String,
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		required: true,
+		ref: 'User'
+	},
+},
+{
+	timestamps: true	
 })
 
 module.exports = mongoose.model("Firmware", schema);

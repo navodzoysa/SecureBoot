@@ -9,10 +9,9 @@ const schema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	date: {
-		type: Date,
-		default: new Date(),
-	},
+},
+{
+	timestamps: true	
 })
 
 module.exports = mongoose.model("User", schema);
