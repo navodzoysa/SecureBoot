@@ -5,7 +5,9 @@ import {
   IconDeviceDesktopAnalytics,
   IconCpu,
 } from '@tabler/icons-react';
-import { NavLink } from 'react-router-dom';
+import { useContext } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -69,7 +71,9 @@ const data = [
 ];
 
 export default function Navigator() {
-const { classes } = useStyles();
+  const { classes } = useStyles();
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const links = data.map((item) => (
     <NavLink to={item.link}
@@ -88,7 +92,9 @@ const { classes } = useStyles();
       </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <a href="/#" className={classes.link} onClick={(event) => event.preventDefault()}>
+        <a href="/#" className={classes.link} onClick={() => {
+          auth.signout(() => navigate("/"));
+        }}>
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
         </a>
