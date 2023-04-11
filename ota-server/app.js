@@ -5,6 +5,13 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const dotenv = require('dotenv').config();
 const databaseConnection = require('./db/conn');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
+const rateLimiter = rateLimit({
+  windowMs: 10000,
+  max: 5,
+});
 
 // var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -21,6 +28,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(helmet());
+app.use(rateLimiter);
 app.use(express.static(path.join(__dirname, '../ui/build')));
 
 // app.use('/', indexRouter);

@@ -1,5 +1,4 @@
 const express = require('express');
-const moment = require('moment');
 const router = express.Router();
 const databaseConnection = require('../db/conn');
 const Device = require('../db/models/device');
@@ -8,10 +7,6 @@ const Device = require('../db/models/device');
 router.get('/', async (req, res) => {
 	try {
 		const data = await Device.find();
-		data.map(device => { 
-			let date = moment.unix(device.lastActive).fromNow();
-			device.lastActive = date;
-		})
 		res.json(data);
 	} catch (error) { 
 		res.status(500).json({message: error.message})
@@ -33,7 +28,6 @@ router.post('/device-info', (req, res) => {
 		deviceName: req.body.deviceName,
 		deviceStatus: req.body.deviceStatus,
 		deviceFirmwareVersion: req.body.deviceFirmwareVersion,
-		lastActive: moment().unix()
 	})
 	device.save();
 	res.json(device);

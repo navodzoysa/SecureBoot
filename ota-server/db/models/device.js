@@ -5,7 +5,10 @@ const schema = mongoose.Schema({
 	deviceName: String,
 	deviceStatus: String,
 	deviceFirmwareVersion: String,
-	lastActive: String,
+	lastActive: {
+		type: Date,
+		default: new Date(),
+	},
 })
 
 module.exports = mongoose.model("Device", schema);
