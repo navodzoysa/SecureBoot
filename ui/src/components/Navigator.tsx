@@ -93,7 +93,7 @@ export default function Navigator() {
 
       <Navbar.Section className={classes.footer}>
         <a href="/#" className={classes.link} onClick={() => {
-          auth.signout(() => navigate("/"));
+          // auth.signout(() => navigate("/"));
         }}>
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>

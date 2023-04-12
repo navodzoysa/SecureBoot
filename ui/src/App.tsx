@@ -1,5 +1,5 @@
 import Navigator from './components/Navigator';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AppShell,
   Avatar,
@@ -13,9 +13,9 @@ import {
   Group,
   Code,
 } from '@mantine/core';
-import { AuthProvider } from './context/AuthContext';
+import { AuthContext } from './context/AuthContext';
+import { useAuth } from './components/AuthenticateUser';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
-import AuthenticatedRoute from './components/AuthenticatedRoute';
 import Login from './views/login/Login';
 import Register from './views/register/Register';
 import DeviceTable from './views/devices/DeviceTable';
@@ -26,10 +26,15 @@ export default function App() {
   const APP_VERSION = process.env.REACT_APP_VERSION;
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-  const [isNotAuthenticated, setIsNotAuthenticated] = useState(true);
+  const [isNotAuthenticated, setIsNotAuthenticated] = useState<boolean>(true);
+  const { user, setUser } = useAuth();
+
+	useEffect(() => {
+		
+	}, [isNotAuthenticated, setIsNotAuthenticated])
   return (
     <Router>
-      <AuthProvider>
+      <AuthContext.Provider value={{ user, setUser }}>
         <AppShell
           styles={{
             main: {
@@ -76,15 +81,15 @@ export default function App() {
           hidden={isNotAuthenticated}
         >
           <Routes>
-            <Route path="/" element={<Navigate replace to="/devices" />} />
-            <Route path="/login" element={<Login setIsNotAuthenticated={setIsNotAuthenticated} />} />
-            <Route path="/register" element={<Register setIsNotAuthenticated={setIsNotAuthenticated} />} />
-            <Route path="/devices" element={<AuthenticatedRoute><DeviceTable /></AuthenticatedRoute>} />
-            <Route path="/firmware" element={<AuthenticatedRoute><FirmwareTable /></AuthenticatedRoute>} />
-            <Route path="/settings" element={<AuthenticatedRoute><DeviceTable /></AuthenticatedRoute>} />
+            <Route path="/" element={isNotAuthenticated ? <Navigate replace to="/login"/> : <Navigate replace to="/devices" />} />
+            <Route path="/login" element={ isNotAuthenticated ? <Login isNotAuthenticated={isNotAuthenticated} setIsNotAuthenticated={setIsNotAuthenticated} /> : <Navigate replace to="/devices" />} />
+            <Route path="/register" element={ isNotAuthenticated ? <Register isNotAuthenticated={isNotAuthenticated} setIsNotAuthenticated={setIsNotAuthenticated} /> : <Navigate replace to="/devices" />} />
+            <Route path="/devices" element={ isNotAuthenticated ? <Navigate replace to="/login"/> : <DeviceTable />} />
+            <Route path="/firmware" element={ isNotAuthenticated ? <Navigate replace to="/login"/> : <FirmwareTable />} />
+            <Route path="/settings" element={ isNotAuthenticated ? <Navigate replace to="/login"/> : <DeviceTable />} />
           </Routes>
         </AppShell>
-      </AuthProvider>
+      </AuthContext.Provider>
     </Router>   
   );
 }

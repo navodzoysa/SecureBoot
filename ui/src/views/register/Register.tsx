@@ -66,10 +66,10 @@ export default function Register(props: any) {
     },
   });
   const onSubmit = () => {
-    auth.signin(form.values.email, () => { 
-      props.setIsNotAuthenticated(false);
-      navigate(from, { replace: true });
-    })
+    // auth.signin(form.values.email, () => { 
+    //   props.setIsNotAuthenticated(false);
+    //   navigate(from, { replace: true });
+    // })
   }
   return (
     <div className={classes.wrapper}>

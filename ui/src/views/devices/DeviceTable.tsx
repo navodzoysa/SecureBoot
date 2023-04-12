@@ -1,23 +1,37 @@
 import { Text } from '@mantine/core';
 import { DataTable } from 'mantine-datatable';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { useLocalStorage } from '../../components/LocalStorage';
 
 export default function DeviceTable() {
 	const [deviceDetails, setDeviceDetails] = useState<any[]>([]);
-	const [fetching, isFetching] = useState(true);
-	async function getDeviceDetails() {
+	const [fetching, isFetching] = useState<boolean>(true);
+	const { getItem } = useLocalStorage();
+	let userDetails: any;
+	useEffect(() => {
+		const user = getItem('user');
+		if (user) {
+			userDetails = JSON.parse(user);
+			console.log('user details - ', userDetails);
+		}
+	}, []);
+
+	const getDevices = useCallback(async () => {
 		isFetching(true);
-		// await new Promise(resolve => setTimeout(resolve, 1000));
-		await axios.get('/api/devices')
+		await axios.get('/api/devices', {headers: { Authorization: 'Bearer ' + userDetails.authToken }})
 			.then(response => response.data)
 			.then((data) => {
 				setDeviceDetails(data);
 				isFetching(false);
+			}).catch((err) => { 
+				console.log('Error fetching devices - ', err);
+				isFetching(false);
 			})
-	}
+	}, [isFetching, setDeviceDetails])
+
 	useEffect(() => {
-		getDeviceDetails();
+		getDevices();
 	}, [])
 	return (
 		<div>
