@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+const Session = mongoose.Schema({
+  refreshToken: {
+    type: String,
+    default: "",
+  },
+})
+
 const schema = mongoose.Schema({
 	userEmail: {
 		type: String,
@@ -8,6 +15,9 @@ const schema = mongoose.Schema({
 	userPassword: {
 		type: String,
 		required: true,
+	},
+	refreshToken: {
+		type: [Session],
 	},
 },
 {

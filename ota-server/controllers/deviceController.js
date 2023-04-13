@@ -6,7 +6,7 @@ const getDevices = asyncHandler(async (req, res) => {
 	if (data && data.length > 0) {
 		res.json(data);
 	} else {
-		res.status(500);
+		res.status(404);
 		throw new Error('Devices not found for current user.')
 	}
 })

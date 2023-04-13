@@ -24,12 +24,15 @@ const registerUser = asyncHandler(async (req, res) => {
 		userEmail: email,
 		userPassword: hash,
 	})
+	const refreshToken = generateRefreshToken(newUser._id);
+	newUser.refreshToken.push({ refreshToken });
 	const userSaved = await newUser.save();
 	if (userSaved) {
+		res.cookie('refreshToken', refreshToken);
 		res.status(201).json({
 			id: userSaved._id,
 			email: userSaved.userEmail,
-			token: generateToken(userSaved._id),
+			accessToken: generateAccessToken(userSaved._id),
 		});
 	} else { 
 		res.status(400);
@@ -49,14 +52,78 @@ const loginUser = asyncHandler(async (req, res) => {
 		throw new Error('User not found');
 	}
 	if (await argon2.verify(user.userPassword, password, { secret: secretPepper })) {
+		const refreshToken = generateRefreshToken(user._id);
+		user.refreshToken.push({ refreshToken });
+		const userSaved = await user.save();
+		res.cookie('refreshToken', refreshToken);
 		res.status(201).json({
-			id: user._id,
-			email: user.userEmail,
-			token: generateToken(user._id),
+			id: userSaved._id,
+			email: userSaved.userEmail,
+			accessToken: generateAccessToken(userSaved._id),
 		});
 	} else {
 		res.status(400);
 		throw new Error('Password is incorrect');
+	}
+})
+
+const logoutUser = asyncHandler(async (req, res) => {
+	const refreshToken = req.cookies.refreshToken;
+	const user = await User.findById(req.user.id);
+	const tokenIndex = user.refreshToken.findIndex(
+        item => item.refreshToken === refreshToken
+	)
+	try {
+		if (tokenIndex !== -1) {
+			let refreshTokenList = user.refreshToken;
+			refreshTokenList.splice(tokenIndex, 1);
+			user.refreshTokenList = refreshTokenList;
+			const savedUser = await user.save();
+			res.clearCookie('refreshToken');
+			res.status(200).json({ message: 'Successfully logged out user ' + savedUser.userEmail })
+		} else {
+			res.status(400);
+			throw new Error('Error logging out user.');
+		}
+	} catch (err) {
+		res.status(400)
+		throw new Error('Error logging out user.')
+	}
+})
+
+const generateNewRefreshToken = asyncHandler(async (req, res) => {
+	const refreshToken = req.cookies.refreshToken;
+	if (refreshToken) {
+		try {
+			const decryptedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
+			const user = await User.findById(decryptedToken.id);
+			if (user) {
+				const tokenIndex = user.refreshToken.findIndex(
+					item => item.refreshToken === refreshToken
+				)
+				if (tokenIndex !== -1) {
+					const newRefreshToken = generateRefreshToken(user._id);
+					user.refreshToken[tokenIndex] = { refreshToken: newRefreshToken };
+					const userSaved = await user.save();
+					res.cookie('refreshToken', newRefreshToken);
+					res.status(201).json({
+						accessToken: generateAccessToken(userSaved._id),
+					});
+				} else {
+					res.status(400);
+					throw new Error('No refresh token found for user! Unauthorized to access this API.');
+				}
+			} else {
+				res.status(400);
+				throw new Error('No user found for given token! Unauthorized to access this API.');
+			}
+		} catch (err) {
+			res.status(400);
+			throw new Error('Error occured while refreshing token.');
+		}
+	} else {
+		res.status(400);
+		throw new Error('No refresh token found! Unauthorized to access this API.');
 	}
 })
 
@@ -69,8 +136,12 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 	})
 })
  
-const generateToken = (id) => {
-	return jwt.sign({ id }, process.env.JWT_KEY, { expiresIn: '1d' })
+const generateAccessToken = (id) => {
+	return jwt.sign({ id }, process.env.JWT_KEY, { expiresIn: process.env.SESSION_EXPIRY })
 }
 
-module.exports = { registerUser, loginUser, getCurrentUser }
+const generateRefreshToken = (id) => {
+	return jwt.sign({ id }, process.env.JWT_REFRESH_KEY, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY })
+}
+
+module.exports = { registerUser, loginUser, logoutUser, generateNewRefreshToken, getCurrentUser }
