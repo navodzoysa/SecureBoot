@@ -11,9 +11,9 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
-import { useCallback, useContext, useEffect, useRef } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../components/AuthenticateUser';
+import { useCallback } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthContext';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -47,24 +47,9 @@ const useStyles = createStyles((theme) => ({
   }
 }));
 
-// const loginUser = async () => {
-// 	await axios.get('/api/users/login')
-// 		.then(response => response.data)
-// 		.then((data) => {
-// 		}).catch((err) => {
-// 			console.log('Error fetching devices - ', err);
-// 		})
-// }
-
-export default function Login(props: any) {
+export default function Login() {
   const { classes } = useStyles();
-  // const auth = useContext(AuthContext);
-  let isNotAuthenticated: boolean = props.isNotAuthenticated;
-  let navigate = useNavigate();
-  let navigateRef = useRef(navigate);
-  let location = useLocation();
-  let from = location.state?.from?.pathname || "/";
-  const { login } = useAuth();
+  const { setUser, setisAuthenticated } = useAuthContext();
   const form = useForm({
     initialValues: {
       email: '',
@@ -73,9 +58,9 @@ export default function Login(props: any) {
     },
     validate: {
       email: (value: string) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      password: (value: string) => (value ? null : 'Invalid password'),
     },
   });
-
 
   const onFormSubmit = (values: any) => {
     if (values) {
@@ -87,45 +72,36 @@ export default function Login(props: any) {
     await axios.post('/api/users/login', { email: values.email, password: values.password })
       .then((response) => {
         const data = response.data;
-        login({ id: data.id, name: data.email, email: data.email, authToken: data.token })
-        props.setIsNotAuthenticated(false);
-        // navigate(from, { replace: true });
+        setUser(data);
+        setisAuthenticated(true);
       }).catch((err) => {
         console.log('Error logging in - ', err);
       })
-  }, [navigate])
+  }, [setUser, setisAuthenticated])
 
   return (
-    <>
-      {isNotAuthenticated ?
-      < div className={classes.wrapper} >
-          <Paper className={classes.form} radius={0} p={30}>
-            <Title order={2} className={classes.title} ta="center" mt="md" mb={50}>
-              Welcome to SecureBoot!
-            </Title>
+    <div className={classes.wrapper} >
+        <Paper className={classes.form} radius={0} p={30}>
+          <Title order={2} className={classes.title} ta="center" mt="md" mb={50}>
+            Welcome to SecureBoot!
+          </Title>
 
-            <form onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
-              <TextInput label="Email" placeholder="hello@gmail.com" size="md" {...form.getInputProps('email')} />
-              <PasswordInput label="Password" placeholder="Your password" mt="md" size="md" {...form.getInputProps('password')} />
-              <Checkbox label="Keep me logged in" mt="xl" size="md" {...form.getInputProps('keepMeLoggedIn', { type: 'checkbox' })} />
-              <Button fullWidth mt="xl" size="md" type="submit">
-                Login
-              </Button>
-            </form>
+          <form onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
+            <TextInput label="Email" placeholder="hello@gmail.com" size="md" {...form.getInputProps('email')} />
+            <PasswordInput label="Password" placeholder="Your password" mt="md" size="md" {...form.getInputProps('password')} />
+            <Checkbox label="Keep me logged in" mt="xl" size="md" {...form.getInputProps('keepMeLoggedIn', { type: 'checkbox' })} />
+            <Button fullWidth mt="xl" size="md" type="submit">
+              Login
+            </Button>
+          </form>
 
-            <Text ta="center" mt="md">
-              Don&apos;t have an account?{' '}
-              <NavLink to="/register" className={classes.link}>
-                Register
-              </NavLink>
-            </Text>
-          </Paper>
-
-          <div></div>
-        </div >
-        :
-        <></>
-                }
-    </>
+          <Text ta="center" mt="md">
+            Don&apos;t have an account?{' '}
+            <NavLink to="/register" className={classes.link}>
+              Register
+            </NavLink>
+          </Text>
+        </Paper>
+    </div >
 	);
 }

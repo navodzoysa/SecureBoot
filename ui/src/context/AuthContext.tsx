@@ -1,12 +1,32 @@
-import { createContext } from 'react';
-import { User } from '../components/User';
+import React, { useState, createContext, useContext } from "react";
 
 interface AuthContext {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: any,
+  setUser: (user: any | null) => void,
+  isAuthenticated: boolean,
+  setisAuthenticated: (isAuthenticated: boolean) => void,
 }
 
-export const AuthContext = createContext<AuthContext>({
+interface AuthContextProviderProps{
+  children: React.ReactNode
+}
+export const AuthContext = createContext<AuthContext>({ 
   user: null,
   setUser: () => {},
+  isAuthenticated: false,
+  setisAuthenticated: () => {},
 });
+
+export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
+  const [user, setUser] = useState<any>();
+  const [isAuthenticated, setisAuthenticated] = useState<boolean>(false);
+  return (
+    <AuthContext.Provider value={{ user, setUser, isAuthenticated, setisAuthenticated }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuthContext = () => {
+  return useContext(AuthContext);
+}
