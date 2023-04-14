@@ -4,15 +4,31 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const errorHandler = require('./middleware/errorHandler');
-const dotenv = require('dotenv').config();
-const databaseConnection = require('./db/conn');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cors = require('cors');
+require('dotenv').config();
+require('./db/conn');
 
 const rateLimiter = rateLimit({
   windowMs: 10000,
   max: 5,
 });
+
+const whitelist = process.env.WHITELISTED_DOMAINS
+  ? process.env.WHITELISTED_DOMAINS.split(",")
+  : []
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}
 
 // var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -27,8 +43,9 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(helmet());
 app.use(rateLimiter);
 app.use(express.static(path.join(__dirname, '../ui/build')));

@@ -3,6 +3,7 @@ const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 const User = require('../db/models/user');
 const secretPepper = Buffer.alloc(16, process.env.SECRET_KEY);
+const { COOKIE_OPTIONS , generateAccessToken, generateRefreshToken } = require('../middleware/authHandler');
 
 const registerUser = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
@@ -28,7 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
 	newUser.refreshToken.push({ refreshToken });
 	const userSaved = await newUser.save();
 	if (userSaved) {
-		res.cookie('refreshToken', refreshToken);
+		res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 		res.status(201).json({
 			id: userSaved._id,
 			email: userSaved.userEmail,
@@ -55,7 +56,7 @@ const loginUser = asyncHandler(async (req, res) => {
 		const refreshToken = generateRefreshToken(user._id);
 		user.refreshToken.push({ refreshToken });
 		const userSaved = await user.save();
-		res.cookie('refreshToken', refreshToken);
+		res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 		res.status(201).json({
 			id: userSaved._id,
 			email: userSaved.userEmail,
@@ -68,7 +69,8 @@ const loginUser = asyncHandler(async (req, res) => {
 })
 
 const logoutUser = asyncHandler(async (req, res) => {
-	const refreshToken = req.cookies.refreshToken;
+	const { signedCookies = {} } = req;
+	const { refreshToken } = signedCookies;
 	const user = await User.findById(req.user.id);
 	const tokenIndex = user.refreshToken.findIndex(
         item => item.refreshToken === refreshToken
@@ -79,7 +81,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 			refreshTokenList.splice(tokenIndex, 1);
 			user.refreshTokenList = refreshTokenList;
 			const savedUser = await user.save();
-			res.clearCookie('refreshToken');
+			res.clearCookie('refreshToken', COOKIE_OPTIONS);
 			res.status(200).json({ message: 'Successfully logged out user ' + savedUser.userEmail })
 		} else {
 			res.status(400);
@@ -92,7 +94,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 })
 
 const generateNewRefreshToken = asyncHandler(async (req, res) => {
-	const refreshToken = req.cookies.refreshToken;
+	const { signedCookies = {} } = req;
+	const { refreshToken } = signedCookies;
 	if (refreshToken) {
 		try {
 			const decryptedToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
@@ -105,7 +108,7 @@ const generateNewRefreshToken = asyncHandler(async (req, res) => {
 					const newRefreshToken = generateRefreshToken(user._id);
 					user.refreshToken[tokenIndex] = { refreshToken: newRefreshToken };
 					const userSaved = await user.save();
-					res.cookie('refreshToken', newRefreshToken);
+					res.cookie('refreshToken', newRefreshToken, COOKIE_OPTIONS);
 					res.status(201).json({
 						accessToken: generateAccessToken(userSaved._id),
 					});
@@ -135,13 +138,5 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 		email: userEmail,
 	})
 })
- 
-const generateAccessToken = (id) => {
-	return jwt.sign({ id }, process.env.JWT_KEY, { expiresIn: process.env.SESSION_EXPIRY })
-}
-
-const generateRefreshToken = (id) => {
-	return jwt.sign({ id }, process.env.JWT_REFRESH_KEY, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY })
-}
 
 module.exports = { registerUser, loginUser, logoutUser, generateNewRefreshToken, getCurrentUser }
