@@ -10,6 +10,7 @@
     "argon2": "^0.30.3",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
     "express": "~4.16.1",
     "express-async-handler": "^1.2.0",
     "express-rate-limit": "^6.7.0",
@@ -21,7 +22,6 @@
     "morgan": "~1.9.1"
   },
   "devDependencies": {
-    "dotenv": "^16.0.3",
     "nodemon": "^2.0.22"
   }
 }
