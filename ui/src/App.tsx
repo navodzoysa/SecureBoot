@@ -1,5 +1,5 @@
 import Navigator from './components/Navigator';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   AppShell,
   Avatar,
@@ -13,15 +13,50 @@ import {
   Group,
   Code,
 } from '@mantine/core';
+import { useAuthContext } from './context/AuthContext';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import Login from './views/login/Login';
+import Register from './views/register/Register';
 import DeviceTable from './views/devices/DeviceTable';
 import FirmwareTable from './views/firmware/FirmwareTable';
 import Logo from './assets/images/secureboot-logo.png';
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import axios from 'axios';
 
 export default function App() {
-const APP_VERSION = process.env.REACT_APP_VERSION;
-const theme = useMantineTheme();
-const [opened, setOpened] = useState(false);
+  const APP_VERSION = process.env.REACT_APP_VERSION;
+  const theme = useMantineTheme();
+  const [opened, setOpened] = useState(false);
+  const { setUser, isAuthenticated, setisAuthenticated } = useAuthContext();
+
+  const verifyUser = useCallback(async () => {
+    await axios.post('/api/users/refresh-token', {})
+      .then((response) => {
+        if (response.status === 201) {
+          setUser((user: any) => {
+            return { ...user, accessToken: response.data.accessToken }
+          })
+          setisAuthenticated(true);
+        } else {
+          setUser((user: any) => {
+            return { ...user, accessToken: null }
+          });
+          setisAuthenticated(false);
+        }
+      })
+      .catch((err) => {
+        setUser((user: any) => {
+            return { ...user, accessToken: null }
+        });
+        setisAuthenticated(false);
+      })
+  }, [setUser, setisAuthenticated])
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      verifyUser();
+    }
+  }, [isAuthenticated, verifyUser])
+
   return (
     <Router>
       <AppShell
@@ -40,7 +75,7 @@ const [opened, setOpened] = useState(false);
         }
         footer={
           <Footer height={60} p="md">
-            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Text color="dimmed" size="sm">
                 SecureBoot © 2023 navodzoysa. All rights reserved.
               </Text>
@@ -60,19 +95,22 @@ const [opened, setOpened] = useState(false);
                 />
               </MediaQuery>
               <Group position="apart">
-                <Avatar src={Logo}/>
+                <Avatar src={Logo} />
                 <Text>SecureBoot</Text>
                 <Code sx={{ fontWeight: 700 }}>v{APP_VERSION}</Code>
               </Group>
             </div>
           </Header>
         }
+        hidden={!isAuthenticated}
       >
         <Routes>
-          <Route path="/" element={<Navigate replace to="/devices" />} />
-          <Route path="/devices" element={<DeviceTable />} />
-          <Route path="/firmware" element={<FirmwareTable />} />
-          <Route path="/settings" element={<DeviceTable/>} />
+          <Route path="/" element={ isAuthenticated ? <Navigate replace to='/devices'/> : <Navigate replace to='/login'/> } />
+          <Route path="/login" element={ isAuthenticated ? <Navigate replace to='/devices'/> : <Login /> } />
+          <Route path="/register" element={ isAuthenticated ? <Navigate replace to='/devices'/> : <Register /> } />
+          <Route path="/devices" element={ isAuthenticated ? <DeviceTable /> : <Navigate replace to='/login'/> } />
+          <Route path="/firmware" element={ isAuthenticated ? <FirmwareTable /> : <Navigate replace to='/login'/> } />
+          <Route path="/settings" element={ isAuthenticated ? <DeviceTable /> : <Navigate replace to='/login'/> } />
         </Routes>
       </AppShell>
     </Router>   

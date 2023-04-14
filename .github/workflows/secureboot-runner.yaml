@@ -15,12 +15,19 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: | 
-        export NODE_ENV=staging
+        export NODE_ENV=production
         export NVM_DIR=~/.nvm
         source ~/.nvm/nvm.sh
         cd ota-server
         touch .env
         echo 'DATABASE_URL: ${{ secrets.DATABASE_URL }}' >> .env
+        echo 'SECRET_KEY: ${{ secrets.SECRET_KEY }}' >> .env
+        echo 'JWT_KEY: ${{ secrets.JWT_KEY }}' >> .env
+        echo 'JWT_REFRESH_KEY: ${{ secrets.JWT_REFRESH_KEY }}' >> .env
+        echo 'SESSION_EXPIRY: ${{ secrets.SESSION_EXPIRY }}' >> .env
+        echo 'REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}' >> .env
+        echo 'COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}' >> .env
+        echo 'WHITELISTED_DOMAINS: ${{ secrets.WHITELISTED_DOMAINS }}' >> .env
         npm install
         cd ../ui
         npm install

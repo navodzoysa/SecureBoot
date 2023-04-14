@@ -5,7 +5,10 @@ import {
   IconDeviceDesktopAnalytics,
   IconCpu,
 } from '@tabler/icons-react';
+import axios from 'axios';
+import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useAuthContext } from '../context/AuthContext';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -69,7 +72,25 @@ const data = [
 ];
 
 export default function Navigator() {
-const { classes } = useStyles();
+  const { classes } = useStyles();
+  const { user, setUser, setisAuthenticated } = useAuthContext();
+
+  const logOutUser = useCallback(async () => {
+    await axios.post('/api/users/logout', null, { headers: { Authorization: 'Bearer ' + user.accessToken }})
+      .then((response) => {
+        if (response.status === 200) {
+          setUser(null)
+          setisAuthenticated(false);
+        } else {
+          setUser(null);
+          setisAuthenticated(false);
+        }
+      })
+      .catch((err) => {
+        setUser(null);
+        setisAuthenticated(false);
+      })
+  }, [user, setUser, setisAuthenticated])
 
   const links = data.map((item) => (
     <NavLink to={item.link}
@@ -88,7 +109,7 @@ const { classes } = useStyles();
       </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <a href="/#" className={classes.link} onClick={(event) => event.preventDefault()}>
+        <a href="/#" className={classes.link} onClick={() => logOutUser()}>
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
         </a>
