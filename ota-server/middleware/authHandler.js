@@ -8,7 +8,7 @@ const COOKIE_OPTIONS = {
   secure: !dev,
   signed: true,
   maxAge: eval(process.env.REFRESH_TOKEN_EXPIRY) * 1000,
-  sameSite: 'Lax',
+  sameSite: !dev ? 'None' : 'Lax',
 }
 
 const generateAccessToken = (id) => {
