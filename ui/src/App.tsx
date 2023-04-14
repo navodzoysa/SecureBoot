@@ -36,14 +36,28 @@ export default function App() {
 
   const verifyUser = useCallback(async () => {
     await axios.post('/api/users/refresh-token', {})
-      .then(response => response.data)
-      .then((data) => {
-        setUser((user: any) => {
-          return { ...user, accessToken: data.accessToken}
-        })
-        setisAuthenticated(true);
+      .then((response) => {
+        if (response.status === 201) {
+          console.log('data', response);
+          setUser((user: any) => {
+            return { ...user, accessToken: response.data.accessToken }
+          })
+          setisAuthenticated(true);
+        } else {
+          setUser((user: any) => {
+            return { ...user, accessToken: null }
+          });
+          setisAuthenticated(false);
+        }
       })
-  }, [setUser])
+      .catch((err) => {
+        console.log('Error refreshing token', err);        
+        setUser((user: any) => {
+            return { ...user, accessToken: null }
+        });
+        setisAuthenticated(false);
+      })
+  }, [setUser, setisAuthenticated])
 
   return (
     <Router>

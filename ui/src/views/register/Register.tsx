@@ -13,9 +13,10 @@ import {
   rem,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useContext } from 'react';
-import { useNavigate, useLocation, NavLink } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import axios from 'axios';
+import { useCallback } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthContext';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -49,12 +50,10 @@ const useStyles = createStyles((theme) => ({
   }
 }));
 
-export default function Register(props: any) {
+export default function Register() {
   const { classes } = useStyles();
-  const auth = useContext(AuthContext);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
+  const { setUser, setisAuthenticated } = useAuthContext();   
+
   const form = useForm({
     initialValues: {
       email: '',
@@ -63,14 +62,38 @@ export default function Register(props: any) {
     },
     validate: {
       email: (value: string) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
+      password: (value: string) => (value ? null : 'Invalid password'),
     },
   });
-  const onSubmit = () => {
-    // auth.signin(form.values.email, () => { 
-    //   props.setIsNotAuthenticated(false);
-    //   navigate(from, { replace: true });
-    // })
+  
+  const onFormSubmit = (values: any) => {
+    if (values) {
+      registerUser(values);
+    }
   }
+  const registerUser = useCallback(async (values: any) => {
+    await axios.post('/api/users/register', { email: values.email, password: values.password })
+      .then((response) => {
+        if (response.status === 201) {
+          const data = response.data;
+          setUser(data);
+          setisAuthenticated(true);
+        } else {
+          setUser((user: any) => {
+            return { ...user, accessToken: null }
+          });
+          setisAuthenticated(false);
+        }
+      })
+      .catch((err) => {
+        console.log('Error registering user - ', err);
+        setUser((user: any) => {
+          return { ...user, accessToken: null }
+        });
+        setisAuthenticated(false);
+      })
+  }, [setUser, setisAuthenticated])
+
   return (
     <div className={classes.wrapper}>
       <Container size={420} my={40}>
@@ -88,7 +111,7 @@ export default function Register(props: any) {
         </Text>
 
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <form onSubmit={form.onSubmit(() => onSubmit())}>
+          <form onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
             <TextInput label="Email" placeholder="hello@gmail.com" required {...form.getInputProps('email')} />
             <PasswordInput label="Password" placeholder="Your password" required mt="md" {...form.getInputProps('password')} />
             {/* <Group position="apart" mt="lg">
@@ -98,7 +121,7 @@ export default function Register(props: any) {
               </Anchor>
             </Group> */}
             <Button fullWidth mt="xl" type="submit">
-              Sign in
+              Sign Up
             </Button>
           </form>
         </Paper>

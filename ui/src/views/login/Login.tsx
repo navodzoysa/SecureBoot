@@ -50,6 +50,7 @@ const useStyles = createStyles((theme) => ({
 export default function Login() {
   const { classes } = useStyles();
   const { setUser, setisAuthenticated } = useAuthContext();
+  
   const form = useForm({
     initialValues: {
       email: '',
@@ -71,11 +72,23 @@ export default function Login() {
   const loginUser = useCallback(async (values: any) => {
     await axios.post('/api/users/login', { email: values.email, password: values.password })
       .then((response) => {
-        const data = response.data;
-        setUser(data);
-        setisAuthenticated(true);
-      }).catch((err) => {
+        if (response.status === 201) {
+          const data = response.data;
+          setUser(data);
+          setisAuthenticated(true);
+        } else {
+          setUser((user: any) => {
+            return { ...user, accessToken: null }
+          });
+          setisAuthenticated(false);
+        }
+      })
+      .catch((err) => {
         console.log('Error logging in - ', err);
+        setUser((user: any) => {
+          return { ...user, accessToken: null }
+        });
+        setisAuthenticated(false);
       })
   }, [setUser, setisAuthenticated])
 

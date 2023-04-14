@@ -77,9 +77,18 @@ export default function Navigator() {
 
   const logOutUser = useCallback(async () => {
     await axios.post('/api/users/logout', null, { headers: { Authorization: 'Bearer ' + user.accessToken }})
-      .then(response => response.data)
-      .then((data) => {
-        setUser(null)
+      .then((response) => {
+        if (response.status === 200) {
+          setUser(null)
+          setisAuthenticated(false);
+        } else {
+          setUser(null);
+          setisAuthenticated(false);
+        }
+      })
+      .catch((err) => {
+        console.log('Error logging out - ', err);
+        setUser(null);
         setisAuthenticated(false);
       })
   }, [setUser, setisAuthenticated])
