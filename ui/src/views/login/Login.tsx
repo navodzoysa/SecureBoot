@@ -84,7 +84,6 @@ export default function Login() {
         }
       })
       .catch((err) => {
-        console.log('Error logging in - ', err);
         setUser((user: any) => {
           return { ...user, accessToken: null }
         });

@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext } from "react";
 
-interface AuthContext {
+interface IAuthContext {
   user: any,
   setUser: (user: any | null) => void,
   isAuthenticated: boolean,
@@ -10,7 +10,7 @@ interface AuthContext {
 interface AuthContextProviderProps{
   children: React.ReactNode
 }
-export const AuthContext = createContext<AuthContext>({ 
+export const AuthContext = createContext<IAuthContext>({ 
   user: null,
   setUser: () => {},
   isAuthenticated: false,

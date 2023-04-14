@@ -28,17 +28,10 @@ export default function App() {
   const [opened, setOpened] = useState(false);
   const { setUser, isAuthenticated, setisAuthenticated } = useAuthContext();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      verifyUser();
-    }
-  }, [isAuthenticated])
-
   const verifyUser = useCallback(async () => {
     await axios.post('/api/users/refresh-token', {})
       .then((response) => {
         if (response.status === 201) {
-          console.log('data', response);
           setUser((user: any) => {
             return { ...user, accessToken: response.data.accessToken }
           })
@@ -51,13 +44,18 @@ export default function App() {
         }
       })
       .catch((err) => {
-        console.log('Error refreshing token', err);        
         setUser((user: any) => {
             return { ...user, accessToken: null }
         });
         setisAuthenticated(false);
       })
   }, [setUser, setisAuthenticated])
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      verifyUser();
+    }
+  }, [isAuthenticated, verifyUser])
 
   return (
     <Router>

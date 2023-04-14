@@ -1,13 +1,10 @@
 import {
   TextInput,
   PasswordInput,
-  Checkbox,
-  Anchor,
   Paper,
   Title,
   Text,
   Container,
-  Group,
   Button,
   createStyles,
   rem,
@@ -71,6 +68,7 @@ export default function Register() {
       registerUser(values);
     }
   }
+
   const registerUser = useCallback(async (values: any) => {
     await axios.post('/api/users/register', { email: values.email, password: values.password })
       .then((response) => {
@@ -86,7 +84,6 @@ export default function Register() {
         }
       })
       .catch((err) => {
-        console.log('Error registering user - ', err);
         setUser((user: any) => {
           return { ...user, accessToken: null }
         });

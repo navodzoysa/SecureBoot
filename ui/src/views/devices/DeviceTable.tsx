@@ -9,12 +9,6 @@ export default function DeviceTable() {
 	const [fetching, isFetching] = useState<boolean>(true);
 	const { user, isAuthenticated } = useAuthContext();
 
-	useEffect(() => {
-		if (isAuthenticated) {
-			getDevices();
-		}
-	}, [isFetching, setDeviceDetails]);
-
 	const getDevices = useCallback(async () => {
 		isFetching(true);
 		await axios.get('/api/devices', {headers: { Authorization: 'Bearer ' + user.accessToken }})
@@ -22,12 +16,17 @@ export default function DeviceTable() {
 			.then((data) => {
 				setDeviceDetails(data);
 				isFetching(false);
-			}).catch((err) => { 
-				console.log('Error fetching devices - ', err);
+			}).catch((err) => {
 				isFetching(false);
 			})
 		isFetching(false);
-	}, [isFetching, setDeviceDetails])
+	}, [user, isFetching, setDeviceDetails])
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			getDevices();
+		}
+	}, [isAuthenticated, getDevices]);
 
 	return (
 		<div>

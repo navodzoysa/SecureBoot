@@ -87,11 +87,10 @@ export default function Navigator() {
         }
       })
       .catch((err) => {
-        console.log('Error logging out - ', err);
         setUser(null);
         setisAuthenticated(false);
       })
-  }, [setUser, setisAuthenticated])
+  }, [user, setUser, setisAuthenticated])
 
   const links = data.map((item) => (
     <NavLink to={item.link}
@@ -110,7 +109,7 @@ export default function Navigator() {
       </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <a href="#" className={classes.link} onClick={() => logOutUser()}>
+        <a href="/#" className={classes.link} onClick={() => logOutUser()}>
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
         </a>
