@@ -5,10 +5,20 @@ const path = require('path');
 const getFirmwares = asyncHandler(async (req, res) => {
     const data = await Firmware.find({ user: req.user.id });
 	if (data && data.length > 0) {
-		res.json(data);
+		res.status(200).json(data);
 	} else {
-		res.status(500);
-		throw new Error('Devices not found for current user.')
+		res.status(404);
+		throw new Error('Firmwares not found for current user.');
+	}
+})
+
+const getFirmwareById = asyncHandler(async (req, res) => {
+    const data = await Firmware.findOne({ _id: req.params.firmwareId, user: req.user.id });
+	if (data) {
+		res.status(200).json(data);
+	} else {
+		res.status(404);
+		throw new Error('Firmware not found for current user.');
 	}
 })
 
@@ -63,4 +73,4 @@ const downloadFirmware = asyncHandler(async (req, res) => {
 })
 
 
-module.exports = { getFirmwares, uploadFirmware, downloadFirmware };
+module.exports = { getFirmwares, getFirmwareById, uploadFirmware, downloadFirmware };

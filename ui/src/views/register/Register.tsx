@@ -17,7 +17,7 @@ import { useAuthContext } from '../../context/AuthContext';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
-    minHeight: rem(900),
+    minHeight: rem(920),
     backgroundSize: 'cover',
     backgroundImage:
       'url(https://images.unsplash.com/photo-1484242857719-4b9144542727?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1280&q=80)',
@@ -27,7 +27,7 @@ const useStyles = createStyles((theme) => ({
     borderRight: `${rem(1)} solid ${
       theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[3]
     }`,
-    minHeight: rem(900),
+    minHeight: rem(920),
     maxWidth: rem(450),
     paddingTop: rem(80),
 

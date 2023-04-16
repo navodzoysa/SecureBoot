@@ -2,14 +2,28 @@ import { DataTable } from 'mantine-datatable';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuthContext } from '../../context/AuthContext';
-import { Tabs } from '@mantine/core';
+import { createStyles, getStylesRef, Group, rem, Tabs } from '@mantine/core';
 import UploadFirmware from './UploadFirmware';
+import { IconSquarePlus, IconListDetails  } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
+
+const useStyles = createStyles((theme) => ({
+	tabWrapper: {
+		marginBottom: rem(20),
+	},
+	linkIcon: {
+		ref: getStylesRef('icon'),
+		color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
+	},
+}));
 
 export default function FirmwareTable() {
+	const { classes } = useStyles();
 	const [firmwareList, setFirmwareList] = useState<any[]>([]);
 	const [fetching, isFetching] = useState<boolean>(true);
 	const [tabValue, setTabValue] = useState('view');
 	const { user, isAuthenticated } = useAuthContext();
+	const navigate = useNavigate();
 
 	const getFirmwareList = useCallback(async () => {
 		isFetching(true);
@@ -35,27 +49,36 @@ export default function FirmwareTable() {
 		setTabValue(value);
 	}
 
-	const downloadFirmware = async (value: any) => {
-		await axios.get('/api/firmware/download/' + value, { headers: { Authorization: 'Bearer ' + user.accessToken } })
-			.then((response) => {
-				console.log('firmware downloaded');
-			})
-			.catch((err) => {
-				console.log('error downloading firmware');
-			})
+	let downloadFirmware = (value: any) => {
+		navigate('/firmware/' + value);
+		// await axios.get('/api/firmware/download/' + value, { headers: { Authorization: 'Bearer ' + user.accessToken } })
+		// 	.then((response) => {
+		// 		console.log('firmware downloaded');
+		// 	})
+		// 	.catch((err) => {
+		// 		console.log('error downloading firmware');
+		// 	})
 	}
 
 	return (
 		<div>
-			<Tabs defaultValue="view" onTabChange={(value) => getCurrentTab(value)}>
+			<Tabs className={classes.tabWrapper} defaultValue="view" onTabChange={(value) => getCurrentTab(value)}>
 				<Tabs.List>
-					<Tabs.Tab value="add">Add firmware</Tabs.Tab>
-					<Tabs.Tab value="view">View firmware</Tabs.Tab>
+					<Tabs.Tab value="view">
+						<Group spacing='xs'>
+							<IconListDetails size='1.05rem' className={classes.linkIcon} />View firmware
+						</Group>
+					</Tabs.Tab>
+					<Tabs.Tab value="add">
+						<Group spacing='xs'>
+							<IconSquarePlus size='1.05rem' className={classes.linkIcon} />Add firmware
+						</Group>
+					</Tabs.Tab>
 				</Tabs.List>
 			</Tabs>
 			{tabValue === "view" && (
 				<DataTable
-					minHeight={'83vh'}
+					minHeight={'78vh'}
 					fetching={fetching}
 					withBorder
 					borderRadius="md"
@@ -74,12 +97,12 @@ export default function FirmwareTable() {
 						},
 						{
 							accessor: 'firmwareSupportedDevice',
-							title: 'Firmware Supported Device'
+							title: 'Supported Device'
 						},
 
 						{
 							accessor: 'firmwareVersion',
-							title: 'Firmware Version'
+							title: 'Version'
 						},
 					]}
 					// execute this callback when a row is clicked

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 // const upload = multer({ dest: "uploads/" });
-const { getFirmwares, uploadFirmware, downloadFirmware } = require('../controllers/firmwareController');
+const { getFirmwares, getFirmwareById, uploadFirmware, downloadFirmware } = require('../controllers/firmwareController');
 const { authenticatedRoute } = require('../middleware/authHandler');
 
 const upload = multer({
@@ -31,6 +31,7 @@ const upload = multer({
 
 /* GET firmware listing. */
 router.get('/', authenticatedRoute, getFirmwares);
+router.get('/:firmwareId', authenticatedRoute, getFirmwareById);
 router.post('/upload', upload.single('file'), authenticatedRoute , uploadFirmware);
 router.get('/download/:firmwareId', authenticatedRoute, downloadFirmware);
 

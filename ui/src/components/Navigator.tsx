@@ -4,13 +4,7 @@ import {
   IconLogout,
   IconDeviceDesktopAnalytics,
   IconCpu,
-  IconView360,
   IconBroadcast,
-  IconLayoutDashboard,
-  IconDashboard,
-  IconDeviceWatchStats,
-  IconApiApp,
-  IconCubeUnfolded,
   IconQrcode,
   IconBox,
 } from '@tabler/icons-react';
@@ -75,10 +69,10 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const data = [
-  { link: '/welcome', label: 'Welcome', icon: IconBroadcast  },
-  { link: '/dashboard', label: 'Dashboard', icon: IconDeviceDesktopAnalytics   },
-  { link: '/devices', label: 'Devices', icon: IconCpu  },
-  { link: '/firmware', label: 'Firmware', icon: IconBox  },
+  { link: '/welcome', label: 'Welcome', icon: IconBroadcast },
+  { link: '/dashboard', label: 'Dashboard', icon: IconDeviceDesktopAnalytics },
+  { link: '/devices', label: 'Devices', icon: IconCpu },
+  { link: '/firmware', label: 'Firmware', icon: IconBox },
   { link: '/provision', label: 'Provisioning', icon: IconQrcode },
   { link: '/settings', label: 'Settings', icon: IconSettings },
 ];
