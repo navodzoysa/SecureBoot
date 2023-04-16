@@ -21,6 +21,7 @@ import DeviceTable from './views/devices/DeviceTable';
 import FirmwareTable from './views/firmware/FirmwareTable';
 import Logo from './assets/images/secureboot-logo.png';
 import axios from 'axios';
+import Welcome from './views/welcome/Welcome';
 
 export default function App() {
   const APP_VERSION = process.env.REACT_APP_VERSION;
@@ -105,9 +106,10 @@ export default function App() {
         hidden={!isAuthenticated}
       >
         <Routes>
-          <Route path="/" element={ isAuthenticated ? <Navigate replace to='/devices'/> : <Navigate replace to='/login'/> } />
-          <Route path="/login" element={ isAuthenticated ? <Navigate replace to='/devices'/> : <Login /> } />
-          <Route path="/register" element={ isAuthenticated ? <Navigate replace to='/devices'/> : <Register /> } />
+          <Route path="/" element={isAuthenticated ? <Navigate replace to='/welcome' /> : <Navigate replace to='/login' />} />
+          <Route path="/login" element={ isAuthenticated ? <Navigate replace to='/welcome'/> : <Login /> } />
+          <Route path="/register" element={isAuthenticated ? <Navigate replace to='/welcome' /> : <Register />} />
+          <Route path="/welcome" element={ isAuthenticated ? <Welcome /> : <Navigate replace to='/login'/> } />
           <Route path="/devices" element={ isAuthenticated ? <DeviceTable /> : <Navigate replace to='/login'/> } />
           <Route path="/firmware" element={ isAuthenticated ? <FirmwareTable /> : <Navigate replace to='/login'/> } />
           <Route path="/settings" element={ isAuthenticated ? <DeviceTable /> : <Navigate replace to='/login'/> } />
