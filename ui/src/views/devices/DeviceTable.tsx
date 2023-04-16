@@ -16,7 +16,8 @@ export default function DeviceTable() {
 			.then((data) => {
 				setDeviceDetails(data);
 				isFetching(false);
-			}).catch((err) => {
+			})
+			.catch((err) => {
 				isFetching(false);
 			})
 		isFetching(false);
