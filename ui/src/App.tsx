@@ -25,7 +25,7 @@ import Welcome from './views/welcome/Welcome';
 import Dashboard from './views/dashboard/Dashboard';
 import Firmware from './views/firmware/Firmware';
 import Device from './views/devices/Device';
-import BreadCrumbs from './components/BreadCrumbsCreator';
+import BreadCrumbsCreator from './components/BreadCrumbsCreator';
 import { NotFound } from './views/error/NotFound';
 
 export default function App() {
@@ -103,17 +103,19 @@ export default function App() {
               </MediaQuery>
               <Group position="apart">
                 <Avatar src={Logo} />
-                <Text>SecureBoot</Text>
+                <Text style={{'fontWeight': '600'}}>SecureBoot</Text>
                 <Code sx={{ fontWeight: 700 }}>v{APP_VERSION}</Code>
+                {isAuthenticated && (
+                  <div style={{'marginLeft': '4.8rem'}}>
+                    <BreadCrumbsCreator></BreadCrumbsCreator>
+                  </div>
+                )}
               </Group>
             </div>
           </Header>
         }
         hidden={!isAuthenticated}
       >
-        { isAuthenticated && (
-          <BreadCrumbs></BreadCrumbs>
-        )}
         <Routes>
           { isAuthenticated ?
             <>
