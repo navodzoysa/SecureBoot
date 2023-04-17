@@ -12,7 +12,7 @@ const getDevices = asyncHandler(async (req, res) => {
 })
 
 const getDeviceById = asyncHandler(async (req, res) => {
-	const data = await Device.findOne({ deviceId: req.params.deviceId, user: req.user.id });
+	const data = await Device.findOne({ _id: req.params.deviceId, user: req.user.id });
 	if (data) {
 		res.status(200).json(data);
 	} else {

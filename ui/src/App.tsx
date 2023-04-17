@@ -103,10 +103,10 @@ export default function App() {
               </MediaQuery>
               <Group position="apart">
                 <Avatar src={Logo} />
-                <Text style={{'fontWeight': '600'}}>SecureBoot</Text>
-                <Code sx={{ fontWeight: 700 }}>v{APP_VERSION}</Code>
+                <Text style={{'fontWeight': '600', fontSize: '1.4rem'}}>SecureBoot</Text>
+                <Code sx={{ fontWeight: 700, paddingTop: '0.5rem' }}>v{APP_VERSION}</Code>
                 {isAuthenticated && (
-                  <div style={{'marginLeft': '4.8rem'}}>
+                  <div style={{'marginLeft': '2.8rem'}}>
                     <BreadCrumbsCreator></BreadCrumbsCreator>
                   </div>
                 )}
@@ -124,7 +124,7 @@ export default function App() {
               <Route path="/welcome" element={<Welcome />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/devices" element={<DeviceTable />} />
-              <Route path="/devices/device/:id" element={<Device />} />
+              <Route path="/devices/:id" element={<Device />} />
               <Route path="/firmware" element={<FirmwareTable />} />
               <Route path="/firmware/:id" element={<Firmware />} />
               <Route path="/settings" element={<DeviceTable />} />

@@ -49,7 +49,7 @@ export default function FirmwareTable() {
 		setTabValue(value);
 	}
 
-	let downloadFirmware = (value: any) => {
+	let viewFirmware = (value: any) => {
 		navigate('/firmware/' + value);
 		// await axios.get('/api/firmware/download/' + value, { headers: { Authorization: 'Bearer ' + user.accessToken } })
 		// 	.then((response) => {
@@ -66,12 +66,12 @@ export default function FirmwareTable() {
 				<Tabs.List>
 					<Tabs.Tab value="view">
 						<Group spacing='xs'>
-							<IconListDetails size='1.05rem' className={classes.linkIcon} />View firmware
+							<IconListDetails size='1.05rem' className={classes.linkIcon} />View Firmware
 						</Group>
 					</Tabs.Tab>
 					<Tabs.Tab value="add">
 						<Group spacing='xs'>
-							<IconSquarePlus size='1.05rem' className={classes.linkIcon} />Add firmware
+							<IconSquarePlus size='1.05rem' className={classes.linkIcon} />Add Firmware
 						</Group>
 					</Tabs.Tab>
 				</Tabs.List>
@@ -106,7 +106,7 @@ export default function FirmwareTable() {
 						},
 					]}
 					// execute this callback when a row is clicked
-					onRowClick={({ _id }) => downloadFirmware(_id)}
+					onRowClick={({ _id }) => viewFirmware(_id)}
 				/>
 			)}
 			{tabValue === "add" && (
