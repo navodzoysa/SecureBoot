@@ -30,6 +30,7 @@ import { NotFound } from './views/error/NotFound';
 
 export default function App() {
   const APP_VERSION = process.env.REACT_APP_VERSION;
+  const [year, setYear] = useState('');
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
   const { setUser, isAuthenticated, setisAuthenticated } = useAuthContext();
@@ -59,6 +60,7 @@ export default function App() {
   }, [setUser, setisAuthenticated])
 
   useEffect(() => {
+    setYear(new Date().getUTCFullYear().toString());
     if (!isAuthenticated) {
       verifyUser();
     }
@@ -84,7 +86,7 @@ export default function App() {
           <Footer height={50} p="md">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Text color="dimmed" size="sm">
-                SecureBoot © 2023 navodzoysa. All rights reserved.
+                SecureBoot © {year} Navod Zoysa
               </Text>
             </div>
           </Footer>
