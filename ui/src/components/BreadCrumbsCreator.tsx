@@ -9,7 +9,6 @@ export default function BreadCrumbsCreator() {
 	const crumbs = location.pathname.split('/')
 		.filter(crumb => crumb !== '')
 		.map(crumb => {
-			console.log(crumb);
 			currentLink += `/${crumb}`
 			let crumbText = crumb.charAt(0).toUpperCase() + crumb.slice(1);
 			return (

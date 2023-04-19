@@ -43,6 +43,7 @@ const uploadFirmware = asyncHandler(async (req, res) => {
 					firmwareName: savedFirmware.firmwareName,
 					firmwareSupportedDevice: 'ESP32',
 					firmwareSize: savedFirmware.firmwareSize,
+					message: 'Firmware uploaded successfully',
 				});
 			} else {
 				res.status(500);

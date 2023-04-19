@@ -12,6 +12,7 @@ import axios from 'axios';
 import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
+import { showNotification } from './Notification';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -83,16 +84,10 @@ export default function Navigator() {
 
   const logOutUser = useCallback(async () => {
     await axios.post('/api/users/logout', null, { headers: { Authorization: 'Bearer ' + user.accessToken }})
-      .then((response) => {
-        if (response.status === 200) {
-          setUser(null)
-          setisAuthenticated(false);
-        } else {
-          setUser(null);
-          setisAuthenticated(false);
-        }
-      })
       .catch((err) => {
+        showNotification(err.status, err.response.data.message);
+      })
+      .finally(() => {
         setUser(null);
         setisAuthenticated(false);
       })

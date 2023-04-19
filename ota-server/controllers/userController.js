@@ -121,7 +121,7 @@ const generateNewRefreshToken = asyncHandler(async (req, res) => {
 				throw new Error('No user found for given token! Unauthorized to access this API.');
 			}
 		} catch (err) {
-			res.status(400);
+			res.status(500);
 			throw new Error('Error occured while refreshing token.');
 		}
 	} else {

@@ -27,6 +27,7 @@ import Firmware from './views/firmware/Firmware';
 import Device from './views/devices/Device';
 import BreadCrumbsCreator from './components/BreadCrumbsCreator';
 import { NotFound } from './views/error/NotFound';
+import { showNotification } from './components/Notification';
 
 export default function App() {
   const APP_VERSION = process.env.REACT_APP_VERSION;
@@ -47,10 +48,11 @@ export default function App() {
           setUser((user: any) => {
             return { ...user, accessToken: null }
           });
+          showNotification(response.status, response.data.message);
           setisAuthenticated(false);
         }
       })
-      .catch((err) => {
+      .catch(() => {
         setUser((user: any) => {
             return { ...user, accessToken: null }
         });
@@ -62,6 +64,7 @@ export default function App() {
   useEffect(() => {
     setYear(new Date().getUTCFullYear().toString());
     if (!isAuthenticated) {
+      console.log('logout - ', localStorage.getItem('logout'))
       verifyUser();
     }
   }, [isAuthenticated, verifyUser])

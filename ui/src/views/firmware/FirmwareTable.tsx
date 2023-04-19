@@ -6,6 +6,7 @@ import { createStyles, getStylesRef, Group, rem, Tabs } from '@mantine/core';
 import UploadFirmware from './UploadFirmware';
 import { IconSquarePlus, IconListDetails  } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import { showNotification } from '../../components/Notification';
 
 const useStyles = createStyles((theme) => ({
 	tabWrapper: {
@@ -28,15 +29,18 @@ export default function FirmwareTable() {
 	const getFirmwareList = useCallback(async () => {
 		isFetching(true);
 		await axios.get('/api/firmware', {headers: { Authorization: 'Bearer ' + user.accessToken }})
-			.then(response => response.data)
-			.then((data) => {
-				setFirmwareList(data);
-				isFetching(false);
+			.then((response) => {
+				if (response.status === 200) {
+					setFirmwareList(response.data);
+				} else {
+					showNotification(response.status, response.data.message);
+				}
 			})
 			.catch((err) => {
+				showNotification(err.status, err.response.data.message);
+			}).finally(() => {
 				isFetching(false);
 			})
-		isFetching(false);
 	}, [user, isFetching, setFirmwareList])
 
 	useEffect(() => {

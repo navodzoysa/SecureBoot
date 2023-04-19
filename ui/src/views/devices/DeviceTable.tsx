@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuthContext } from '../../context/AuthContext';
 import { IconListDetails, IconSquarePlus } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import { showNotification } from '../../components/Notification';
 
 const useStyles = createStyles((theme) => ({
 	tabWrapper: {
@@ -27,15 +28,19 @@ export default function DeviceTable() {
 	const getDevices = useCallback(async () => {
 		isFetching(true);
 		await axios.get('/api/devices', {headers: { Authorization: 'Bearer ' + user.accessToken }})
-			.then(response => response.data)
-			.then((data) => {
-				setDeviceDetails(data);
-				isFetching(false);
+			.then((response) => {
+				if (response.status === 200) {
+					setDeviceDetails(response.data);
+				} else {
+					showNotification(response.status, response.data.message);
+				}
 			})
 			.catch((err) => {
+				showNotification(err.status, err.response.data.message);
+			})
+			.finally(() => {
 				isFetching(false);
 			})
-		isFetching(false);
 	}, [user, isFetching, setDeviceDetails])
 
 	useEffect(() => {

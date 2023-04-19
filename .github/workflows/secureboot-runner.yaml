@@ -15,11 +15,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: | 
-        export NODE_ENV=production
         export NVM_DIR=~/.nvm
         source ~/.nvm/nvm.sh
         cd ota-server
         touch .env
+        echo 'NODE_ENV: ${{ vars.NODE_ENV }}' >> .env
         echo 'DATABASE_URL: ${{ secrets.DATABASE_URL }}' >> .env
         echo 'SECRET_KEY: ${{ secrets.SECRET_KEY }}' >> .env
         echo 'JWT_KEY: ${{ secrets.JWT_KEY }}' >> .env

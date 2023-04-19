@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
+import { showNotification } from '../../components/Notification';
 
 export default function Firmware() {
 	const { user, isAuthenticated } = useAuthContext();
@@ -11,13 +12,15 @@ export default function Firmware() {
 
 	const getFirmwareDetailsById = useCallback(async () => {
 		await axios.get('/api/firmware/' + params.id, {headers: { Authorization: 'Bearer ' + user.accessToken }})
-			.then(response => response.data)
-			.then((data) => {
-				setFirmwareDetails(data);
-				console.log(data);
+			.then((response) => {
+				if (response.status === 200) {
+					setFirmwareDetails(response.data);
+				} else {
+					showNotification(response.status, response.data.message);
+				}
 			})
 			.catch((err) => {
-				console.log(err);
+				showNotification(err.status, err.response.data.message);
 			})
 	}, [params, user, setFirmwareDetails])
 

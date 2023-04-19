@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
+import { showNotification } from '../../components/Notification';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -80,6 +81,7 @@ export default function Register() {
           setUser((user: any) => {
             return { ...user, accessToken: null }
           });
+          showNotification(response.status, response.data.message);
           setisAuthenticated(false);
         }
       })
@@ -87,6 +89,7 @@ export default function Register() {
         setUser((user: any) => {
           return { ...user, accessToken: null }
         });
+        showNotification(err.status, err.response.data.message);
         setisAuthenticated(false);
       })
   }, [setUser, setisAuthenticated])

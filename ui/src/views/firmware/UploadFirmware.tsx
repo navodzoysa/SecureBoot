@@ -4,6 +4,7 @@ import { Dropzone } from '@mantine/dropzone';
 import { IconCloudUpload, IconX, IconDownload } from '@tabler/icons-react';
 import axios from 'axios';
 import { useAuthContext } from '../../context/AuthContext';
+import { showNotification } from '../../components/Notification';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -38,7 +39,6 @@ export default function UploadFirmware() {
 
 	const getFileData = (files: any) => {
 		setFirmwareBinary(files);
-		console.log(files);
 	}
 
 	const uploadFirmwareBinary = async () => {
@@ -50,11 +50,18 @@ export default function UploadFirmware() {
 				formdata,
 				{ headers: { Authorization: 'Bearer ' + user.accessToken, 'Content-Type': 'multipart/form-data' }})
 				.then((response) => {
-					isUploading(false);
+					if (response.status === 201) {
+						showNotification(response.status, response.data.message);
+					} else {
+						showNotification(response.status, response.data.message);
+					}
 				})
 				.catch((err) => {
-					isUploading(false);
+					showNotification(err.status, err.response.data.message);
 				})
+				.finally(() => {
+					isUploading(false);
+				}) 
 		}
 	}
 
@@ -67,6 +74,7 @@ export default function UploadFirmware() {
 				radius="md"
 				accept={['application/octet-stream']}
 				maxSize={10 * 1024 ** 2}
+				loading={uploading}
 			>
 				<div style={{ pointerEvents: 'none' }}>
 				<Group position="center">
