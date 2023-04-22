@@ -49,7 +49,7 @@ const useStyles = createStyles((theme) => ({
     '&::after': {
       content: '""',
       display: 'block',
-      backgroundColor: theme.fn.primaryColor(),
+      backgroundColor: theme.colors.teal[5],
       width: rem(45),
       height: rem(2),
       marginTop: theme.spacing.sm,
@@ -68,7 +68,7 @@ const useStyles = createStyles((theme) => ({
     '&::after': {
       content: '""',
       display: 'block',
-      backgroundColor: theme.fn.primaryColor(),
+      backgroundColor: theme.colors.teal[5],
       width: rem(45),
       height: rem(2),
       marginTop: theme.spacing.sm,
@@ -80,7 +80,7 @@ export default function Welcome() {
   const { classes, theme } = useStyles();
   const features = mockdata.map((feature) => (
     <Card key={feature.title} shadow="md" radius="md" className={classes.card} padding="xl">
-      <feature.icon size={rem(50)} stroke={2} color={theme.fn.primaryColor()} />
+      <feature.icon size={rem(50)} stroke={2} color={theme.colors.teal[5]} />
       <Text fz="xl" fw={500} className={classes.cardTitle} mt="md">
         {feature.title}
       </Text>
@@ -93,7 +93,7 @@ export default function Welcome() {
   return (
     <Container size="xl" py="xl">
       <Group position="center">
-        <Badge variant="filled" size="xl">
+        <Badge variant="filled" size="xl" color='teal'>
           Secure Firmware Updates
         </Badge>
       </Group>

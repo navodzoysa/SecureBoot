@@ -15,7 +15,7 @@ import {
   Box,
   Anchor,
 } from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { hasLength, isEmail, useForm } from '@mantine/form';
 import axios from 'axios';
 import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
@@ -131,8 +131,8 @@ export default function Login() {
       keepMeLoggedIn: false,
     },
     validate: {
-      email: (value: string) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
-      password: (value: string) => (value ? null : 'Invalid password'),
+      email: isEmail('Invalid email'),
+      password: hasLength({min: 8}, 'Password must be at least 8 characters'),
     },
   });
 

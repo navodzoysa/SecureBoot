@@ -59,7 +59,7 @@ export function NotFound() {
             page has been moved to another URL. If you think this is an error contact support.
           </Text>
           <Group position="center">
-            <Button onClick={() => {navigate('/welcome')}} size="md">Take me back to home page</Button>
+            <Button color="teal" onClick={() => {navigate('/welcome')}} size="md">Take me back to home page</Button>
           </Group>
         </div>
       </div>

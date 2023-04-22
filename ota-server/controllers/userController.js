@@ -13,7 +13,7 @@ const registerUser = asyncHandler(async (req, res) => {
 	}
 	if (password.length < 8) { 
 		res.status(400);
-		throw new Error('Password must be atleast 8 characters');
+		throw new Error('Password must be at least 8 characters');
 	}
 	const user = await User.findOne({ userEmail: email });
 	if (user) { 

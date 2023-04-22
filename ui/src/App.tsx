@@ -28,6 +28,7 @@ import Device from './views/devices/Device';
 import BreadCrumbsCreator from './components/BreadCrumbsCreator';
 import { NotFound } from './views/error/NotFound';
 import { showNotification } from './components/Notification';
+import DeviceProvisioning from './views/provisioning/DeviceProvisioning';
 
 export default function App() {
   const APP_VERSION = process.env.REACT_APP_VERSION;
@@ -132,6 +133,7 @@ export default function App() {
               <Route path="/devices/:id" element={<Device />} />
               <Route path="/firmware" element={<FirmwareTable />} />
               <Route path="/firmware/:id" element={<Firmware />} />
+              <Route path="/provisioning" element={<DeviceProvisioning />} />
               <Route path="/settings" element={<DeviceTable />} />
               <Route path="*" element={<NotFound />} />
             </>

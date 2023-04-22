@@ -37,8 +37,11 @@ export default function FirmwareTable() {
 				}
 			})
 			.catch((err) => {
-				showNotification(err.status, err.response.data.message);
-			}).finally(() => {
+				if (err.response.status !== 404) {
+					showNotification(err.reponse.status, err.response.data.message);
+				}
+			})
+			.finally(() => {
 				isFetching(false);
 			})
 	}, [user, isFetching, setFirmwareList])

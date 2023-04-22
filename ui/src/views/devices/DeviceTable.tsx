@@ -36,7 +36,9 @@ export default function DeviceTable() {
 				}
 			})
 			.catch((err) => {
-				showNotification(err.status, err.response.data.message);
+				if (err.response.status !== 404) {
+					showNotification(err.reponse.status, err.response.data.message);
+				}
 			})
 			.finally(() => {
 				isFetching(false);
