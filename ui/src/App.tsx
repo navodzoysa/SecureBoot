@@ -32,6 +32,7 @@ import DeviceProvisioning from './views/provisioning/DeviceProvisioning';
 import Settings from './views/settings/Settings';
 import GroupTable from './views/groups/GroupTable';
 import Group from './views/groups/Group';
+import User from './views/user/User';
 
 export default function App() {
   const APP_VERSION = process.env.REACT_APP_VERSION;
@@ -140,6 +141,7 @@ export default function App() {
               <Route path="/groups/:id" element={<Group />} />
               <Route path="/provisioning" element={<DeviceProvisioning />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/user" element={<User />} />
               <Route path="*" element={<NotFound />} />
             </>
             :

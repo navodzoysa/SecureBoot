@@ -57,7 +57,6 @@ const useStyles = createStyles((theme) => ({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: theme.colorScheme === 'light' ? theme.colors.dark[6] : theme.colors.gray[0],
     color: 'white',
     textAlign: 'center',
     padding: rem(5),
@@ -67,7 +66,7 @@ const useStyles = createStyles((theme) => ({
     backgroundColor:
       theme.colorScheme === 'light' ? theme.colors.dark[5] : theme.colors.blue[0],
     },
-    fontSize: rem(12),
+    fontSize: rem(9),
   }
 }));
 
