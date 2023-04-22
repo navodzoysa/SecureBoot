@@ -10,7 +10,7 @@ import {
   MediaQuery,
   Burger,
   useMantineTheme,
-  Group,
+  Group as MantineGroup,
   Code,
 } from '@mantine/core';
 import { useAuthContext } from './context/AuthContext';
@@ -29,6 +29,9 @@ import BreadCrumbsCreator from './components/BreadCrumbsCreator';
 import { NotFound } from './views/error/NotFound';
 import { showNotification } from './components/Notification';
 import DeviceProvisioning from './views/provisioning/DeviceProvisioning';
+import Settings from './views/settings/Settings';
+import GroupTable from './views/groups/GroupTable';
+import Group from './views/groups/Group';
 
 export default function App() {
   const APP_VERSION = process.env.REACT_APP_VERSION;
@@ -107,7 +110,7 @@ export default function App() {
                   mr="xl"
                 />
               </MediaQuery>
-              <Group position="apart">
+              <MantineGroup position="apart">
                 <Avatar src={Logo} />
                 <Text style={{'fontWeight': '600', fontSize: '1.4rem'}}>SecureBoot</Text>
                 <Code sx={{ fontWeight: 700, paddingTop: '0.5rem' }}>v{APP_VERSION}</Code>
@@ -116,7 +119,7 @@ export default function App() {
                     <BreadCrumbsCreator></BreadCrumbsCreator>
                   </div>
                 )}
-              </Group>
+              </MantineGroup>
             </div>
           </Header>
         }
@@ -133,8 +136,10 @@ export default function App() {
               <Route path="/devices/:id" element={<Device />} />
               <Route path="/firmware" element={<FirmwareTable />} />
               <Route path="/firmware/:id" element={<Firmware />} />
+              <Route path="/groups" element={<GroupTable />} />
+              <Route path="/groups/:id" element={<Group />} />
               <Route path="/provisioning" element={<DeviceProvisioning />} />
-              <Route path="/settings" element={<DeviceTable />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </>
             :

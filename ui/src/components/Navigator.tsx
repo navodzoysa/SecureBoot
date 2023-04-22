@@ -7,6 +7,7 @@ import {
   IconBroadcast,
   IconQrcode,
   IconBox,
+  IconBinaryTree2,
 } from '@tabler/icons-react';
 import axios from 'axios';
 import { useCallback } from 'react';
@@ -74,6 +75,7 @@ const data = [
   { link: '/dashboard', label: 'Dashboard', icon: IconDeviceDesktopAnalytics },
   { link: '/devices', label: 'Devices', icon: IconCpu },
   { link: '/firmware', label: 'Firmware', icon: IconBox },
+  { link: '/groups', label: 'Groups', icon: IconBinaryTree2 },
   { link: '/provisioning', label: 'Provisioning', icon: IconQrcode },
   { link: '/settings', label: 'Settings', icon: IconSettings },
 ];
