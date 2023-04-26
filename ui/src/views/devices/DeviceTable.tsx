@@ -86,6 +86,8 @@ export default function DeviceTable() {
 				<DataTable
 					minHeight={'78vh'}
 					fetching={fetching}
+					loaderColor="teal"
+					loaderSize="xl"
 					withBorder
 					borderRadius="md"
 					shadow="md"

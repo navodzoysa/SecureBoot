@@ -17,28 +17,27 @@ const useStyles = createStyles((theme) => ({
 	},
 }));
 
-export default function GroupTable() {
+export default function UpdatesTable() {
 	const { classes } = useStyles();
-	const [groupDetails, setGroupDetails] = useState<any[]>([]);
+	const [updateDetails, setUpdateDetails] = useState<any[]>([]);
 	const [fetching, isFetching] = useState<boolean>(true);
 	const [tabValue, setTabValue] = useState('view');
 	const { user, isAuthenticated } = useAuthContext();
 	const navigate = useNavigate();
 
-	const getGroups = useCallback(async () => {
+	const getUpdates = useCallback(async () => {
 		isFetching(true);
-		await axios.get('/api/groups', {headers: { Authorization: 'Bearer ' + user.accessToken }})
+		await axios.get('/api/updates', {headers: { Authorization: 'Bearer ' + user.accessToken }})
 			.then((response) => {
 				if (response.status === 200) {
 					if (Array.isArray(response.data)) {
-						setGroupDetails(response.data);
+						setUpdateDetails(response.data);
 					}
 				} else {
 					showNotification(response.status, response.data.message);
 				}
 			})
 			.catch((err) => {
-				console.log('err ', err)
 				if (err.response.status !== 404) {
 					showNotification(err.reponse.status, err.response.data.message);
 				}
@@ -46,20 +45,20 @@ export default function GroupTable() {
 			.finally(() => {
 				isFetching(false);
 			})
-	}, [user, isFetching, setGroupDetails])
+	}, [user, isFetching, setUpdateDetails])
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			getGroups();
+			getUpdates();
 		}
-	}, [isAuthenticated, getGroups]);
+	}, [isAuthenticated, getUpdates]);
 
 	const getCurrentTab = (value: any) => {
 		setTabValue(value);
 	}
 
-	let viewGroup = (value: any) => {
-		navigate('/groups/' + value);
+	let viewUpdate = (value: any) => {
+		navigate('/updates/' + value);
 	}
 
 	return (
@@ -68,12 +67,12 @@ export default function GroupTable() {
 				<Tabs.List>
 					<Tabs.Tab value="view">
 						<Group spacing='xs'>
-							<IconListDetails size='1.05rem' className={classes.linkIcon} />View Groups
+							<IconListDetails size='1.05rem' className={classes.linkIcon} />View Updates
 						</Group>
 					</Tabs.Tab>
 					<Tabs.Tab value="add">
 						<Group spacing='xs'>
-							<IconSquarePlus size='1.05rem' className={classes.linkIcon} />Add Group
+							<IconSquarePlus size='1.05rem' className={classes.linkIcon} />Add Update
 						</Group>
 					</Tabs.Tab>
 				</Tabs.List>
@@ -91,21 +90,21 @@ export default function GroupTable() {
 					striped
 					highlightOnHover
 					// provide data
-					records={groupDetails}
+					records={updateDetails}
 					idAccessor="_id"
 					// define columns
 					columns={[
 						{
-							accessor: 'groupName',
-							title: 'Group Name'
+							accessor: 'updateName',
+							title: 'Update Name'
 						},
 						{
-							accessor: 'deviceCount',
-							title: 'Device Count',
+							accessor: 'updateStatus',
+							title: 'Update Status'
 						},
 					]}
 					// execute this callback when a row is clicked
-					onRowClick={({ _id }) => viewGroup(_id)}
+					onRowClick={({ _id }) => viewUpdate(_id)}
 				/>
 			)}
 			{tabValue === "add" && (

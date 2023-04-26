@@ -33,6 +33,7 @@ import Settings from './views/settings/Settings';
 import GroupTable from './views/groups/GroupTable';
 import Group from './views/groups/Group';
 import User from './views/user/User';
+import UpdatesTable from './views/updates/UpdatesTable';
 
 export default function App() {
   const APP_VERSION = process.env.REACT_APP_VERSION;
@@ -137,12 +138,13 @@ export default function App() {
               <Route path="/devices/:id" element={<Device />} />
               <Route path="/firmware" element={<FirmwareTable />} />
               <Route path="/firmware/:id" element={<Firmware />} />
+              <Route path="/updates" element={<UpdatesTable />} />
               <Route path="/groups" element={<GroupTable />} />
               <Route path="/groups/:id" element={<Group />} />
               <Route path="/provisioning" element={<DeviceProvisioning />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/user" element={<User />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="/*" element={<Navigate replace to='/error' />} />
             </>
             :
             <>
@@ -151,6 +153,8 @@ export default function App() {
               <Route path="/register" element={<Register />} />
             </>
           }
+          <Route path="/error" element={<NotFound />} />
+          <Route path="/*" element={<NotFound />} />
         </Routes>
       </AppShell>
     </Router>   

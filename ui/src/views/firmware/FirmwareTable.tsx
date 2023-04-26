@@ -87,6 +87,8 @@ export default function FirmwareTable() {
 				<DataTable
 					minHeight={'78vh'}
 					fetching={fetching}
+					loaderColor="teal"
+					loaderSize="xl"
 					withBorder
 					borderRadius="md"
 					shadow="md"

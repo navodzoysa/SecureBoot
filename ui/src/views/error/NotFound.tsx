@@ -1,5 +1,7 @@
-import { createStyles, Container, Title, Text, Button, Group, rem } from '@mantine/core';
+import { createStyles, Container, Title, Text, Button, Group, rem, LoadingOverlay } from '@mantine/core';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthContext';
 
 const useStyles = createStyles((theme) => ({
   root: {
@@ -48,21 +50,40 @@ const useStyles = createStyles((theme) => ({
 export function NotFound() {
   const { classes } = useStyles();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuthContext();
+      
+  useEffect(() => {
+    const loadData = async () => {
+      await new Promise((r) => setTimeout(r, 250));
+      setLoading(false);
+    };
+    loadData();
+  }, [])
 
   return (
     <Container className={classes.root}>
-      <div className={classes.inner}>
-        <div className={classes.content}>
-          <Title className={classes.title}>Nothing to see here</Title>
-          <Text color="dimmed" size="lg" align="center" className={classes.description}>
-            Page you are trying to open does not exist. You may have mistyped the address, or the
-            page has been moved to another URL. If you think this is an error contact support.
-          </Text>
-          <Group position="center">
-            <Button color="teal" onClick={() => {navigate('/welcome')}} size="md">Take me back to home page</Button>
-          </Group>
+      { !loading ?
+        <div className={classes.inner}>
+          <div className={classes.content}>
+            <Title className={classes.title}>Nothing to see here</Title>
+            <Text color="dimmed" size="lg" align="center" className={classes.description}>
+              Page you are trying to open does not exist. You may have mistyped the address, or the
+              page has been moved to another URL. If you think this is an error contact support.
+            </Text>
+            <Group position="center">
+              <Button color="teal" onClick={() => { navigate( isAuthenticated ? '/welcome' : '/login') }} size="md">Take me back to home page</Button>
+            </Group>
+          </div>
         </div>
-      </div>
+        :
+        <LoadingOverlay
+          loaderProps={{ size: 'xl', color: 'teal', variant: 'oval' }}
+          overlayOpacity={0.3}
+          overlayColor="#c5c5c5"
+          visible
+        />
+      }
     </Container>
   );
 }
