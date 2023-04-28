@@ -109,7 +109,7 @@ export default function DeviceTable() {
 							// this column has custom cell data rendering
 							render: ({ deviceStatus }) => (
 								<Text weight={700} color={deviceStatus === 'Up to date' ? 'green' : 'red'}>
-									{deviceStatus.toUpperCase()}
+									{deviceStatus ? deviceStatus.toUpperCase() : 'Unprovisioned'}
 								</Text>
 							),
 						},

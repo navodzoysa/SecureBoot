@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Device = require('../db/models/device');
+const DeviceInfo = require('../db/models/deviceInfo');
 
 const getDevices = asyncHandler(async (req, res) => {
 	const data = await Device.find({ user: req.user.id });
@@ -21,23 +22,53 @@ const getDeviceById = asyncHandler(async (req, res) => {
 	}
 })
 
-const addDeviceInfo = asyncHandler(async (req, res) => {
+const provisionDevice = asyncHandler(async (req, res) => {
+	const { deviceName, deviceType } = req.body;
+	if (!deviceName ||  !deviceType) { 
+		res.status(400);
+		throw new Error('Device name and device type is required')
+	}
+	const existingDevice = await Device.findOne({ deviceName: deviceName });
+	if (existingDevice) { 
+		res.status(400);
+		throw new Error('Device already exists with the given name. Please choose a different name');
+	}
 	const device = new Device({
-		deviceId: req.body.deviceId,
-		deviceName: req.body.deviceName,
-		deviceStatus: req.body.deviceStatus,
-		deviceFirmwareVersion: req.body.deviceFirmwareVersion,
+		deviceName: deviceName,
+		deviceType: deviceType,
 		user: req.user.id,
 	})
 	const savedDevice = await device.save();
 
 	if (savedDevice) {
 		res.status(201).json({
-			deviceId: savedDevice.deviceId,
 			deviceName: savedDevice.deviceName,
-			deviceStatus: savedDevice.deviceStatus,
-			deviceFirmwareVersion: savedDevice.deviceFirmwareVersion,
 			user: savedDevice.user,
+			message: 'Your ' + savedDevice.deviceName + ' is ready to be provisioned. Please flash the device',
+		});
+	} else {
+		res.status(404);
+		throw new Error('Could not add device for current user.')
+	}
+})
+
+const addDeviceInfo = asyncHandler(async (req, res) => {
+	const deviceInfo = new DeviceInfo({
+		deviceId: req.body.deviceId,
+		deviceName: req.body.deviceName,
+		deviceStatus: req.body.deviceStatus,
+		deviceFirmwareVersion: req.body.deviceFirmwareVersion,
+		user: req.user.id,
+	})
+	const savedDeviceInfo = await deviceInfo.save();
+
+	if (savedDeviceInfo) {
+		res.status(201).json({
+			deviceId: savedDeviceInfo.deviceId,
+			deviceName: savedDeviceInfo.deviceName,
+			deviceStatus: savedDeviceInfo.deviceStatus,
+			deviceFirmwareVersion: savedDeviceInfo.deviceFirmwareVersion,
+			user: savedDeviceInfo.user,
 		});
 	} else {
 		res.status(404);
@@ -45,4 +76,4 @@ const addDeviceInfo = asyncHandler(async (req, res) => {
 	}
 })
 
-module.exports = { getDevices, getDeviceById, addDeviceInfo };
+module.exports = { getDevices, getDeviceById, provisionDevice, addDeviceInfo };
