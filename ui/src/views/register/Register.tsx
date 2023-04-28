@@ -13,7 +13,7 @@ import {
   Box,
   Anchor,
 } from '@mantine/core';
-import { hasLength, isEmail, useForm } from '@mantine/form';
+import { hasLength, isEmail, matchesField, useForm } from '@mantine/form';
 import axios from 'axios';
 import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
@@ -76,13 +76,17 @@ export default function Register() {
 
   const form = useForm({
     initialValues: {
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
-      keepMeLoggedIn: false,
+      confirmPassword: '',
     },
     validate: {
+      firstName: hasLength({min: 4}, 'Name must be at least 4 characters'),
       email: isEmail('Invalid email'),
-      password: hasLength({min: 8}, 'Password must be at least 8 characters'),
+      password: hasLength({ min: 8 }, 'Password must be at least 8 characters'),
+      confirmPassword: matchesField('password', 'Passwords do not match')
     },
   });
   
@@ -93,7 +97,14 @@ export default function Register() {
   }
 
   const registerUser = useCallback(async (values: any) => {
-    await axios.post('/api/users/register', { email: values.email, password: values.password })
+    await axios.post('/api/users/register',
+      {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password
+      }
+    )
       .then((response) => {
         if (response.status === 201) {
           const data = response.data;
@@ -138,8 +149,11 @@ export default function Register() {
               </NavLink>
             </Text>
             <form onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
-              <TextInput label="Email" placeholder="hello@gmail.com" required {...form.getInputProps('email')} />
+              <TextInput label="First Name" placeholder="John" required {...form.getInputProps('firstName')} />
+              <TextInput label="Last Name" placeholder="Doe" mt="md" {...form.getInputProps('lastName')} />
+              <TextInput label="Email" placeholder="hello@gmail.com" required mt="md" {...form.getInputProps('email')} />
               <PasswordInput label="Password" placeholder="Your password" required mt="md" {...form.getInputProps('password')} />
+              <PasswordInput label="Confirm Password" placeholder="Retype your password" required mt="md" {...form.getInputProps('confirmPassword')} />
               <Button fullWidth mt="xl" type="submit">
                 Sign Up
               </Button>

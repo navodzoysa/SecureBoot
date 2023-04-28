@@ -16,7 +16,6 @@ import { NavLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import { UserButton } from '../views/user/UserButton';
 import { showNotification } from './Notification';
-import Logo from '../assets/images/secureboot-logo.png';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -116,7 +115,7 @@ export default function Navigator() {
       </Navbar.Section>
 
       <Navbar.Section>
-        <UserButton image={Logo} name='John Doe' email='hello@gmail.com' />
+        <UserButton name={user.firstName + " " + user.lastName} email={user.email} />
       </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>

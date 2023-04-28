@@ -6,10 +6,10 @@ const secretPepper = Buffer.alloc(16, process.env.SECRET_KEY);
 const { COOKIE_OPTIONS , generateAccessToken, generateRefreshToken } = require('../middleware/authHandler');
 
 const registerUser = asyncHandler(async (req, res) => {
-	const { email, password } = req.body;
-	if (!email || !password) { 
+	const { firstName, lastName, email, password } = req.body;
+	if (!firstName || !email || !password) { 
 		res.status(400);
-		throw new Error('Email and password required')
+		throw new Error('First name, email and password required')
 	}
 	if (password.length < 8) { 
 		res.status(400);
@@ -22,6 +22,8 @@ const registerUser = asyncHandler(async (req, res) => {
 	}
 	const hash = await argon2.hash(password, { secret: secretPepper });
 	const newUser = new User({
+		userFirstName: firstName,
+		userLastName: lastName,
 		userEmail: email,
 		userPassword: hash,
 	})
@@ -31,6 +33,8 @@ const registerUser = asyncHandler(async (req, res) => {
 	if (userSaved) {
 		res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 		res.status(201).json({
+			firstName: userSaved.userFirstName,
+			lastName: userSaved.userLastName,
 			id: userSaved._id,
 			email: userSaved.userEmail,
 			accessToken: generateAccessToken(userSaved._id),
@@ -58,6 +62,8 @@ const loginUser = asyncHandler(async (req, res) => {
 		const userSaved = await user.save();
 		res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS);
 		res.status(201).json({
+			firstName: userSaved.userFirstName,
+			lastName: userSaved.userLastName,
 			id: userSaved._id,
 			email: userSaved.userEmail,
 			accessToken: generateAccessToken(userSaved._id),
@@ -110,6 +116,10 @@ const generateNewRefreshToken = asyncHandler(async (req, res) => {
 					const userSaved = await user.save();
 					res.cookie('refreshToken', newRefreshToken, COOKIE_OPTIONS);
 					res.status(201).json({
+						firstName: userSaved.userFirstName,
+						lastName: userSaved.userLastName,
+						id: userSaved._id,
+						email: userSaved.userEmail,
 						accessToken: generateAccessToken(userSaved._id),
 					});
 				} else {

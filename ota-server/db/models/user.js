@@ -8,6 +8,13 @@ const Session = mongoose.Schema({
 })
 
 const schema = mongoose.Schema({
+	userFirstName: {
+		type: String,
+		required: true,
+	},
+	userLastName: {
+		type: String,
+	},
 	userEmail: {
 		type: String,
 		required: true,

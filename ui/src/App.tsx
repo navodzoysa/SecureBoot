@@ -46,9 +46,7 @@ export default function App() {
     await axios.post('/api/users/refresh-token', {})
       .then((response) => {
         if (response.status === 201) {
-          setUser((user: any) => {
-            return { ...user, accessToken: response.data.accessToken }
-          })
+          setUser(response.data);
           setisAuthenticated(true);
         } else {
           setUser((user: any) => {
@@ -70,7 +68,6 @@ export default function App() {
   useEffect(() => {
     setYear(new Date().getUTCFullYear().toString());
     if (!isAuthenticated) {
-      console.log('logout - ', localStorage.getItem('logout'))
       verifyUser();
     }
   }, [isAuthenticated, verifyUser])

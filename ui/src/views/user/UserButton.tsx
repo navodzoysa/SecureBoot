@@ -23,7 +23,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface UserButtonProps extends UnstyledButtonProps {
-  image: string;
+  image?: string;
   name: string;
   email: string;
   icon?: React.ReactNode;
@@ -40,7 +40,7 @@ export function UserButton({ image, name, email, icon, ...others }: UserButtonPr
   return (
     <UnstyledButton onClick={() => navigateUser()} className={classes.user} {...others}>
       <Group>
-        <Avatar src={image} radius="xl" />
+        <Avatar src={image ? image : null} radius="md" size="md" color="teal" />
 
         <div style={{ flex: 1 }}>
           <Text size="sm" weight={500}>

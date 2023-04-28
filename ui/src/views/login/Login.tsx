@@ -177,8 +177,8 @@ export default function Login() {
           </Flex>
 
           <form onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
-            <TextInput label="Email" placeholder="hello@gmail.com" size="md" {...form.getInputProps('email')} />
-            <PasswordInput label="Password" placeholder="Your password" mt="md" size="md" {...form.getInputProps('password')} />
+            <TextInput label="Email" placeholder="hello@gmail.com" required size="md" {...form.getInputProps('email')} />
+            <PasswordInput label="Password" placeholder="Your password" required mt="md" size="md" {...form.getInputProps('password')} />
             <Checkbox label="Keep me logged in" mt="xl" size="md" {...form.getInputProps('keepMeLoggedIn', { type: 'checkbox' })} />
             <Button fullWidth mt="xl" size="md" type="submit">
               Login
