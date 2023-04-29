@@ -63,6 +63,22 @@ void setup()
 {
 
   Serial.begin(115200);
+  printf("ESP32 Partition table:\n\n");
+
+  printf("| Type | Sub |  Offset  |   Size   |       Label      |\n");
+  printf("| ---- | --- | -------- | -------- | ---------------- |\n");
+
+  esp_partition_iterator_t pi = esp_partition_find(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
+  if (pi != NULL)
+  {
+    do
+    {
+      const esp_partition_t *p = esp_partition_get(pi);
+      printf("|  %02x  | %02x  | 0x%06X | 0x%06X | %-16s |\r\n",
+             p->type, p->subtype, p->address, p->size, p->label);
+    } while (pi = (esp_partition_next(pi)));
+  }
+  printf("| ---- | --- | -------- | -------- | ---------------- |\n");
   Serial.printf("Booted %s with ChipID - %" PRIu64 "\n", ESP.getChipModel(), ESP.getEfuseMac());
   Serial.print("Attempting to connect to SSID: ");
   WiFi.begin(ssid, password);
