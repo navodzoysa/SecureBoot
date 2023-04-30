@@ -1,4 +1,4 @@
-import { createStyles, getStylesRef, Group, rem, Tabs, Text } from '@mantine/core';
+import { Button, Card, createStyles, getStylesRef, Group, rem, Tabs, Text } from '@mantine/core';
 import { DataTable } from 'mantine-datatable';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
@@ -104,6 +104,10 @@ export default function DeviceTable() {
 							title: 'Device Name'
 						},
 						{
+							accessor: 'deviceType',
+							title: 'Device Type'
+						},
+						{
 							accessor: 'deviceStatus',
 							title: 'Device Status',
 							// this column has custom cell data rendering
@@ -123,9 +127,15 @@ export default function DeviceTable() {
 				/>
 			)}
 			{tabValue === "add" && (
-				<div style={{'flex': 'display'}}>
-					<div></div>
-				</div>
+				<Card
+					style={{ minHeight: '78vh'}}
+					withBorder
+					shadow='md'
+					radius='md'
+				>
+					<Text>Provision a device</Text>
+					<Button onClick={() => {navigate('/provisioning')}}>Take me to provisioning</Button>
+				</Card>
 			)}
 		</div>
 	);

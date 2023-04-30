@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Stepper, Button, Group, Container, Flex, Divider, PasswordInput, TextInput, rem, Text, Card } from '@mantine/core';
+import { Stepper, Button, Group, Container, Flex, Divider, PasswordInput, TextInput, Text, Card } from '@mantine/core';
 import { hasLength, useForm } from '@mantine/form';
 import { showNotification } from '../../components/Notification';
 import axios from 'axios';
@@ -24,6 +24,8 @@ export default function DeviceProvisioning() {
         if (form.values.deviceName.length >= 4 && form.values.deviceType.length >= 4) {
           onFormSubmit(form.values);
         } else {
+          setSuccessTitle('Error');
+          setSuccessMessage('Device name and device type must be at least 4 characters');
           showNotification(400, 'Device name and device type must be at least 4 characters');
         }
       }
@@ -76,81 +78,110 @@ export default function DeviceProvisioning() {
   }, [user])
 
   return (
-    <Container size='xl' mt='xl' p={0}>
+    <Container size='100%' mt='xl' p={0}>
       <Stepper active={active} onStepClick={setActive} breakpoint="sm">
         <Stepper.Step
           label="First step"
           description="Device Identification"
           allowStepSelect={shouldAllowSelectStep(0)}
         >
-          <Divider
-            label='Configure Device Identification'
-            labelPosition='center'
-            labelProps={{ 'size': 'xl', 'weight': '700', 'fz': 'xl' }}
-            mb="lg"
-          />
-          <Flex align='center' direction='column'>
-            <form style={{'width': '50%', minHeight: rem(600)}} onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
-              <TextInput label="Device Name" placeholder="My Device" required size="md" mt="lg" {...form.getInputProps('deviceName')} />
-              <TextInput label="Device Type" placeholder="ESP32" required size="md" {...form.getInputProps('deviceType')} />
-            </form>
-          </Flex>
+          <Card
+            style={{ 'width': '100%', minHeight: '70vh' }}
+            withBorder
+            shadow='md'
+            radius='md'
+          >
+            <Divider
+              label='Configure Device Identification'
+              labelPosition='center'
+              labelProps={{ 'size': 'xl', 'weight': '700', 'fz': 'xl' }}
+              mb="lg"
+            />
+            <Flex align='center' direction='column'>
+              <form style={{'width': '50%', minHeight: '60vh'}} onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
+                <TextInput label="Device Name" placeholder="My Device" required size="md" mt="lg" {...form.getInputProps('deviceName')} />
+                <TextInput label="Device Type" placeholder="ESP32" required size="md" {...form.getInputProps('deviceType')} />
+              </form>
+            </Flex>
+          </Card>
 		    </Stepper.Step>
         <Stepper.Step
           label="Second step"
           description="Device Credentials"
           allowStepSelect={shouldAllowSelectStep(1)}
         >
-          <Divider
-            label='Configure Device Credentials'
-            labelPosition='center'
-            labelProps={{ 'size': 'xl', 'weight': '700', 'fz': 'xl' }}
-            mb="lg"
-          />
-          <Flex align='center' direction='column'>
-            <form style={{'width': '50%', minHeight: rem(600)}} onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
-              <TextInput label="Wi-Fi SSID" placeholder="My Wifi" required size="md" mt="lg" {...form.getInputProps('wifiSsid')} />
-              <PasswordInput label="Wi-Fi Password" placeholder="Your Wifi password" required mt="md" size="md" {...form.getInputProps('wifiPassword')} />
-            </form>
-          </Flex>
+          <Card style={{ 'width': '100%', minHeight: '70vh' }}
+            withBorder
+            shadow='md'
+            radius='md'
+          >
+            <Divider
+              label='Configure Device Credentials'
+              labelPosition='center'
+              labelProps={{ 'size': 'xl', 'weight': '700', 'fz': 'xl' }}
+              mb="lg"
+            />
+            <Flex align='center' direction='column'>
+              <form style={{'width': '50%', minHeight: '60vh'}} onSubmit={form.onSubmit((values) => onFormSubmit(values))}>
+                <TextInput label="Wi-Fi SSID" placeholder="My Wifi" required size="md" mt="lg" {...form.getInputProps('wifiSsid')} />
+                <PasswordInput label="Wi-Fi Password" placeholder="Your Wifi password" required mt="md" size="md" {...form.getInputProps('wifiPassword')} />
+              </form>
+            </Flex>
+          </Card>
         </Stepper.Step>
         <Stepper.Step
           label="Final step"
           description="Confirm"
           allowStepSelect={shouldAllowSelectStep(2)}
         >
-          <Divider
-            label='Confirm Device Provisioning'
-            labelPosition='center'
-            labelProps={{ 'size': 'xl', 'weight': '700', 'fz': 'xl' }}
-            mb="lg"
-          />
-            <Card style={{ 'width': '100%', minHeight: rem(600) }} >
-              <Flex direction='column' align='center' justify='center'>
-                <Text>Device Name: {form.values.deviceName}</Text>
-                <Text>Device Type: {form.values.deviceType}</Text>
-              </Flex>
-            </Card>
+          <Card style={{ 'width': '100%', minHeight: '70vh' }}
+            withBorder
+            shadow='md'
+            radius='md'
+          >
+            <Divider
+              label='Confirm Device Provisioning'
+              labelPosition='center'
+              labelProps={{ 'size': 'xl', 'weight': '700', 'fz': 'xl' }}
+              mb="lg"
+            />
+            <Flex direction='column' align='center' justify='center'>
+              <div style={{ 'width': '50%', minHeight: '60vh' }}>
+                <Flex direction='column' align='center' justify='center'>
+                  <Text>Device Name: {form.values.deviceName}</Text>
+                  <Text>Device Type: {form.values.deviceType}</Text>
+                  </Flex>
+                </div>
+            </Flex>
+          </Card>
         </Stepper.Step>
 
         <Stepper.Completed>
-          <Divider
-            label={successTitle}
-            labelPosition='center'
-            labelProps={{ 'size': 'xl', 'weight': '700', 'fz': 'xl' }}
-            mb="lg"
-          />
-            <Card style={{ 'width': '100%', minHeight: rem(600) }} >
-              <Flex direction='column' align='center' justify='center'>
-                <Text>{successMessage}</Text>
-              </Flex>
-            </Card>
+          <Card style={{ 'width': '100%', minHeight: '70vh' }}
+            withBorder
+            shadow='md'
+            radius='md'
+          >
+            <Divider
+              label={successTitle}
+              labelPosition='center'
+              labelProps={{ 'size': 'xl', 'weight': '700', 'fz': 'xl' }}
+              mb="lg"
+            />
+            <Flex direction='column' align='center' justify='center'>
+              <div style={{ 'width': '50%', minHeight: '60vh' }}>
+                <Flex direction='column' align='center' justify='center'>
+                  <Text>{successMessage}</Text>
+                </Flex>
+              </div>
+            </Flex>
+          </Card>
         </Stepper.Completed>
       </Stepper>
 
       <Group position="center" mt="xl" >
         { active !== 0 ?
-          <Button variant="default" onClick={() => handleStepChange(active - 1)}>
+          <Button variant="default" radius="md" onClick={() => handleStepChange(active - 1)}>
             Back
           </Button>
           :
@@ -158,6 +189,7 @@ export default function DeviceProvisioning() {
         }
         { active !== 3 ?
           <Button
+            radius="md"
             onClick={() => handleStepChange(active + 1)}
           >
             {active === 2 ? 'Confirm' : 'Next step'}

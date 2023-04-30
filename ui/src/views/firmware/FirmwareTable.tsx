@@ -2,7 +2,7 @@ import { DataTable } from 'mantine-datatable';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuthContext } from '../../context/AuthContext';
-import { createStyles, getStylesRef, Group, rem, Tabs } from '@mantine/core';
+import { Card, createStyles, getStylesRef, Group, rem, Tabs, Text } from '@mantine/core';
 import UploadFirmware from './UploadFirmware';
 import { IconSquarePlus, IconListDetails  } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
@@ -119,9 +119,15 @@ export default function FirmwareTable() {
 				/>
 			)}
 			{tabValue === "add" && (
-				<div style={{'flex': 'display'}}>
+				<Card
+					style={{ minHeight: '78vh' }}
+					withBorder
+					shadow='md'
+					radius='md'
+				>
+					<Text>Add new firmware</Text>
 					<UploadFirmware></UploadFirmware>
-				</div>
+				</Card>
 			)}
 		</div>
 	);

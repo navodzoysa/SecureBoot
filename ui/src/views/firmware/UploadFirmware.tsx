@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Text, Group, Button, createStyles, rem } from '@mantine/core';
+import { Text, Group, Button, createStyles, rem, Flex } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import { IconCloudUpload, IconX, IconDownload } from '@tabler/icons-react';
 import axios from 'axios';
@@ -23,10 +23,8 @@ const useStyles = createStyles((theme) => ({
   },
 
   control: {
-    position: 'absolute',
-    width: rem(250),
-    left: `calc(50% - ${rem(125)})`,
-    bottom: rem(-20),
+	  width: rem(250),
+	  marginBottom: rem(100)
   },
 }));
 
@@ -62,11 +60,14 @@ export default function UploadFirmware() {
 				.finally(() => {
 					isUploading(false);
 				}) 
+		} else {
+			showNotification(400, 'No firmware added. Please add a firmware binary to upload!');
 		}
 	}
 
 	return (
 		<div className={classes.wrapper}>
+			<Flex direction='column' align='center' justify='center'>
 			<Dropzone
 				openRef={openRef}
 				onDrop={(files) => getFileData(files)}
@@ -113,12 +114,13 @@ export default function UploadFirmware() {
 				Select files
 			</Button>
 			<Button
-				style={{ 'position': 'absolute', 'top': '20rem', 'left': '46rem' }}
-				size="md" radius="xl"
+				style={{ width: '10%' }}
+				size="md" radius="md"
 				onClick={() => uploadFirmwareBinary()}
 			>
 				Submit
 			</Button>
+		</Flex>
 		</div>
 	);
 }
