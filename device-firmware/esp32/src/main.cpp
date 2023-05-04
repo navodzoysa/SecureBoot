@@ -1,41 +1,41 @@
-#include "WiFi.h"
 #include "HttpsOTAUpdate.h"
+#include "WiFi.h"
 #include <stdint.h>
 
 static const char *ssid = "Wokwi-GUEST";
 static const char *password = "";
 
-static const char *url = "https://dl.dropboxusercontent.com/s/7y8nasjntpp0l6g/firmware.bin";
+static const char *url =
+    "https://dl.dropboxusercontent.com/s/7y8nasjntpp0l6g/firmware.bin";
 
-static const char *server_certificate = "-----BEGIN CERTIFICATE-----\n"
-                                        "MIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh\n"
-                                        "MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\n"
-                                        "d3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBD\n"
-                                        "QTAeFw0wNjExMTAwMDAwMDBaFw0zMTExMTAwMDAwMDBaMGExCzAJBgNVBAYTAlVT\n"
-                                        "MRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\n"
-                                        "b20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IENBMIIBIjANBgkqhkiG\n"
-                                        "9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4jvhEXLeqKTTo1eqUKKPC3eQyaKl7hLOllsB\n"
-                                        "CSDMAZOnTjC3U/dDxGkAV53ijSLdhwZAAIEJzs4bg7/fzTtxRuLWZscFs3YnFo97\n"
-                                        "nh6Vfe63SKMI2tavegw5BmV/Sl0fvBf4q77uKNd0f3p4mVmFaG5cIzJLv07A6Fpt\n"
-                                        "43C/dxC//AH2hdmoRBBYMql1GNXRor5H4idq9Joz+EkIYIvUX7Q6hL+hqkpMfT7P\n"
-                                        "T19sdl6gSzeRntwi5m3OFBqOasv+zbMUZBfHWymeMr/y7vrTC0LUq7dBMtoM1O/4\n"
-                                        "gdW7jVg/tRvoSSiicNoxBN33shbyTApOB6jtSj1etX+jkMOvJwIDAQABo2MwYTAO\n"
-                                        "BgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUA95QNVbR\n"
-                                        "TLtm8KPiGxvDl7I90VUwHwYDVR0jBBgwFoAUA95QNVbRTLtm8KPiGxvDl7I90VUw\n"
-                                        "DQYJKoZIhvcNAQEFBQADggEBAMucN6pIExIK+t1EnE9SsPTfrgT1eXkIoyQY/Esr\n"
-                                        "hMAtudXH/vTBH1jLuG2cenTnmCmrEbXjcKChzUyImZOMkXDiqw8cvpOp/2PV5Adg\n"
-                                        "06O/nVsJ8dWO41P0jmP6P6fbtGbfYmbW0W5BjfIttep3Sp+dWOIrWcBAI+0tKIJF\n"
-                                        "PnlUkiaY4IBIqDfv8NZ5YBberOgOzW6sRBc4L0na4UU+Krk2U886UAb3LujEV0ls\n"
-                                        "YSEY1QSteDwsOoBrp+uvFRTp2InBuThs4pFsiv9kuXclVzDAGySj4dzp30d8tbQk\n"
-                                        "CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n"
-                                        "-----END CERTIFICATE-----\n";
+static const char *server_certificate =
+    "-----BEGIN CERTIFICATE-----\n"
+    "MIIDrzCCApegAwIBAgIQCDvgVpBCRrGhdWrJWZHHSjANBgkqhkiG9w0BAQUFADBh\n"
+    "MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\n"
+    "d3cuZGlnaWNlcnQuY29tMSAwHgYDVQQDExdEaWdpQ2VydCBHbG9iYWwgUm9vdCBD\n"
+    "QTAeFw0wNjExMTAwMDAwMDBaFw0zMTExMTAwMDAwMDBaMGExCzAJBgNVBAYTAlVT\n"
+    "MRUwEwYDVQQKEwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5j\n"
+    "b20xIDAeBgNVBAMTF0RpZ2lDZXJ0IEdsb2JhbCBSb290IENBMIIBIjANBgkqhkiG\n"
+    "9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4jvhEXLeqKTTo1eqUKKPC3eQyaKl7hLOllsB\n"
+    "CSDMAZOnTjC3U/dDxGkAV53ijSLdhwZAAIEJzs4bg7/fzTtxRuLWZscFs3YnFo97\n"
+    "nh6Vfe63SKMI2tavegw5BmV/Sl0fvBf4q77uKNd0f3p4mVmFaG5cIzJLv07A6Fpt\n"
+    "43C/dxC//AH2hdmoRBBYMql1GNXRor5H4idq9Joz+EkIYIvUX7Q6hL+hqkpMfT7P\n"
+    "T19sdl6gSzeRntwi5m3OFBqOasv+zbMUZBfHWymeMr/y7vrTC0LUq7dBMtoM1O/4\n"
+    "gdW7jVg/tRvoSSiicNoxBN33shbyTApOB6jtSj1etX+jkMOvJwIDAQABo2MwYTAO\n"
+    "BgNVHQ8BAf8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUA95QNVbR\n"
+    "TLtm8KPiGxvDl7I90VUwHwYDVR0jBBgwFoAUA95QNVbRTLtm8KPiGxvDl7I90VUw\n"
+    "DQYJKoZIhvcNAQEFBQADggEBAMucN6pIExIK+t1EnE9SsPTfrgT1eXkIoyQY/Esr\n"
+    "hMAtudXH/vTBH1jLuG2cenTnmCmrEbXjcKChzUyImZOMkXDiqw8cvpOp/2PV5Adg\n"
+    "06O/nVsJ8dWO41P0jmP6P6fbtGbfYmbW0W5BjfIttep3Sp+dWOIrWcBAI+0tKIJF\n"
+    "PnlUkiaY4IBIqDfv8NZ5YBberOgOzW6sRBc4L0na4UU+Krk2U886UAb3LujEV0ls\n"
+    "YSEY1QSteDwsOoBrp+uvFRTp2InBuThs4pFsiv9kuXclVzDAGySj4dzp30d8tbQk\n"
+    "CAUw7C29C79Fv1C5qfPrmAESrciIxpg0X40KPMbp1ZWVbd4=\n"
+    "-----END CERTIFICATE-----\n";
 
 static HttpsOTAStatus_t otastatus;
 
-void HttpEvent(HttpEvent_t *event)
-{
-  switch (event->event_id)
-  {
+void HttpEvent(HttpEvent_t *event) {
+  switch (event->event_id) {
   case HTTP_EVENT_ERROR:
     Serial.println("Http Event Error");
     break;
@@ -46,7 +46,8 @@ void HttpEvent(HttpEvent_t *event)
     Serial.println("Http Event Header Sent");
     break;
   case HTTP_EVENT_ON_HEADER:
-    Serial.printf("Http Event On Header, key=%s, value=%s\n", event->header_key, event->header_value);
+    Serial.printf("Http Event On Header, key=%s, value=%s\n", event->header_key,
+                  event->header_value);
     break;
   case HTTP_EVENT_ON_DATA:
     break;
@@ -59,8 +60,7 @@ void HttpEvent(HttpEvent_t *event)
   }
 }
 
-void setup()
-{
+void setup() {
 
   Serial.begin(115200);
   printf("ESP32 Partition table:\n\n");
@@ -68,24 +68,23 @@ void setup()
   printf("| Type | Sub |  Offset  |   Size   |       Label      |\n");
   printf("| ---- | --- | -------- | -------- | ---------------- |\n");
 
-  esp_partition_iterator_t pi = esp_partition_find(ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
-  if (pi != NULL)
-  {
-    do
-    {
+  esp_partition_iterator_t pi = esp_partition_find(
+      ESP_PARTITION_TYPE_ANY, ESP_PARTITION_SUBTYPE_ANY, NULL);
+  if (pi != NULL) {
+    do {
       const esp_partition_t *p = esp_partition_get(pi);
-      printf("|  %02x  | %02x  | 0x%06X | 0x%06X | %-16s |\r\n",
-             p->type, p->subtype, p->address, p->size, p->label);
+      printf("|  %02x  | %02x  | 0x%06X | 0x%06X | %-16s |\r\n", p->type,
+             p->subtype, p->address, p->size, p->label);
     } while (pi = (esp_partition_next(pi)));
   }
   printf("| ---- | --- | -------- | -------- | ---------------- |\n");
-  Serial.printf("Booted %s with ChipID - %" PRIu64 "\n", ESP.getChipModel(), ESP.getEfuseMac());
+  Serial.printf("Booted %s with ChipID - %" PRIu64 "\n", ESP.getChipModel(),
+                ESP.getEfuseMac());
   Serial.print("Attempting to connect to SSID: ");
   WiFi.begin(ssid, password);
 
   // attempt to connect to Wifi network:
-  while (WiFi.status() != WL_CONNECTED)
-  {
+  while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(1000);
   }
@@ -100,16 +99,13 @@ void setup()
   Serial.println("Please Wait it takes some time ...");
 }
 
-void loop()
-{
+void loop() {
   otastatus = HttpsOTA.status();
-  if (otastatus == HTTPS_OTA_SUCCESS)
-  {
-    Serial.println("Firmware written successfully. To reboot device, call API ESP.restart() or PUSH restart button on device");
+  if (otastatus == HTTPS_OTA_SUCCESS) {
+    Serial.println("Firmware written successfully. To reboot device, call API "
+                   "ESP.restart() or PUSH restart button on device");
     ESP.restart();
-  }
-  else if (otastatus == HTTPS_OTA_FAIL)
-  {
+  } else if (otastatus == HTTPS_OTA_FAIL) {
     Serial.println("Firmware Upgrade Fail");
   }
   delay(1000);

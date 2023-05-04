@@ -18,6 +18,7 @@ jobs:
         export NVM_DIR=~/.nvm
         source ~/.nvm/nvm.sh
         cd ota-server
+        mkdir -p uploads
         touch .env
         echo 'NODE_ENV: ${{ vars.NODE_ENV }}' >> .env
         echo 'DATABASE_URL: ${{ secrets.DATABASE_URL }}' >> .env
