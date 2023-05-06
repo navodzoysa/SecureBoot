@@ -24,11 +24,27 @@ const getFirmwareById = asyncHandler(async (req, res) => {
 
 const uploadFirmware = asyncHandler(async (req, res) => {
 	const { file } = req;
+	const { firmwareName, deviceType, firmwareVersion } = req.body;
+	if (!firmwareName || !deviceType || !firmwareVersion) {
+		res.status(400);
+		throw new Error('Firmware name, device type or firmware version is missing');
+	}
+	const existingFirmware = await Firmware.findOne({
+		firmwareSupportedDevice: deviceType.toLowerCase(),
+		firmwareVersion: firmwareVersion
+	});
+	if (existingFirmware) {
+		res.status(400);
+		throw new Error('Firmware already exists with that version. Please upload a new version');
+	}
 	try {
 		if (file) {
+			const alternateVersion = firmwareVersion.split('.').join('');
 			const newFirmware = new Firmware({
-				firmwareName: file.originalname,
-				firmwareSupportedDevice: 'ESP32',
+				firmwareName: firmwareName,
+				firmwareSupportedDevice: deviceType.toLowerCase(),
+				firmwareVersion: firmwareVersion,
+				firmwareAltVersion: alternateVersion,
 				firmwareBinaryPath: file.path,
 				firmwareBinaryPathName: file.filename,
 				firmwareMimeType: file.mimetype,
@@ -40,8 +56,10 @@ const uploadFirmware = asyncHandler(async (req, res) => {
 			if (savedFirmware) {
 				res.status(201);
 				res.json({
+					firmwareId: savedFirmware.id,
 					firmwareName: savedFirmware.firmwareName,
-					firmwareSupportedDevice: 'ESP32',
+					firmwareSupportedDevice: savedFirmware.firmwareSupportedDevice,
+					firmwareVersion: savedFirmware.firmwareVersion,
 					firmwareSize: savedFirmware.firmwareSize,
 					message: 'Firmware uploaded successfully',
 				});
@@ -54,9 +72,8 @@ const uploadFirmware = asyncHandler(async (req, res) => {
 			throw new Error('File not found.');
 		}
 	} catch (err) {
-		console.log(err);
 		res.status(400);
-		throw new Error('err');
+		throw new Error('Error occured while uploading firmware.');
 	}
 })
 
@@ -73,5 +90,36 @@ const downloadFirmware = asyncHandler(async (req, res) => {
 	}
 })
 
+const getLatestFirmware = asyncHandler(async (req, res) => {
+	const { deviceType } = req.params;
+	const { currentVersion } = req.query;
 
-module.exports = { getFirmwares, getFirmwareById, uploadFirmware, downloadFirmware };
+	if (!deviceType || !currentVersion) {
+		res.status(400);
+		throw new Error('Device tpye and current firmware version is missing.');
+	}
+
+	try {
+		let currentAlternateVersion = currentVersion.split('.').join('');
+		const latestFirmware = await Firmware.findOne({
+			firmwareSupportedDevice: deviceType.toLowerCase()
+		}).sort({ firmwareAltVersion: -1 }).limit(1);
+		if (latestFirmware) {
+			if (latestFirmware.firmwareAltVersion > parseInt(currentAlternateVersion)) {
+				res.status(200).json(latestFirmware);
+			} else {
+				res.status(400);
+				throw new Error('Current firmware version is equal to the latest version.');
+			}
+		} else {
+			res.status(404);
+			throw new Error('No firmware found for the given device type.');
+		}
+	} catch (err) {
+		res.status(400);
+		throw new Error(err.message);
+	}
+})
+
+
+module.exports = { getFirmwares, getFirmwareById, uploadFirmware, downloadFirmware, getLatestFirmware };

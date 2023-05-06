@@ -4,6 +4,7 @@ const schema = mongoose.Schema({
 	firmwareName: String,
 	firmwareSupportedDevice: String,
 	firmwareVersion: String,
+	firmwareAltVersion: Number,
 	firmwareBinaryPath: String,
 	firmwareBinaryPathName: String,
 	firmwareMimeType: String,
