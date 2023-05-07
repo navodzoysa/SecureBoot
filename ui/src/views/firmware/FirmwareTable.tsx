@@ -2,7 +2,7 @@ import { DataTable } from 'mantine-datatable';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuthContext } from '../../context/AuthContext';
-import { Card, createStyles, getStylesRef, Group, rem, Tabs } from '@mantine/core';
+import { Card, createStyles, getStylesRef, Group, rem, Tabs, Text } from '@mantine/core';
 import UploadFirmware from './UploadFirmware';
 import { IconSquarePlus, IconListDetails  } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
@@ -106,9 +106,13 @@ export default function FirmwareTable() {
 						},
 						{
 							accessor: 'firmwareSupportedDevice',
-							title: 'Supported Device'
+							title: 'Supported Device',
+							render: ({ firmwareSupportedDevice }) => (
+								<Text>
+									{firmwareSupportedDevice ? firmwareSupportedDevice.toUpperCase() : 'Unknown'}
+								</Text>
+							),
 						},
-
 						{
 							accessor: 'firmwareVersion',
 							title: 'Version'

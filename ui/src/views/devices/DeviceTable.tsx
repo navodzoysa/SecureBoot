@@ -105,7 +105,12 @@ export default function DeviceTable() {
 						},
 						{
 							accessor: 'deviceType',
-							title: 'Device Type'
+							title: 'Device Type',
+							render: ({ deviceType }) => (
+								<Text>
+									{deviceType ? deviceType.toUpperCase() : 'Unknown'}
+								</Text>
+							),
 						},
 						{
 							accessor: 'deviceStatus',
