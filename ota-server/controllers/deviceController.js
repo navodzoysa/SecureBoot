@@ -1,3 +1,4 @@
+const { createHmac } = require('crypto');
 const asyncHandler = require('express-async-handler');
 const Device = require('../db/models/device');
 const DeviceInfo = require('../db/models/deviceInfo');
@@ -38,12 +39,15 @@ const provisionDevice = asyncHandler(async (req, res) => {
 		deviceType: deviceType,
 		user: req.user.id,
 	})
+	const generatedPreSharedKey = createHmac('sha256', process.env.PRE_SHARED_SECRET).update(device.id).digest('hex');
+	device.preSharedKey = generatedPreSharedKey;
 	const savedDevice = await device.save();
 
 	if (savedDevice) {
 		res.status(201).json({
 			deviceName: savedDevice.deviceName,
 			user: savedDevice.user,
+			preSharedKey: savedDevice.preSharedKey,
 			message: 'Your ' + savedDevice.deviceName + ' is ready to be provisioned. Please flash the device',
 		});
 	} else {

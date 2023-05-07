@@ -12,6 +12,10 @@ const schema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	preSharedKey: {
+		type: String,
+		required: true,
+	},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,

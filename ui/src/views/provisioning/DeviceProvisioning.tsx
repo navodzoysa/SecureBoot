@@ -10,6 +10,7 @@ export default function DeviceProvisioning() {
   const [highestStepVisited, setHighestStepVisited] = useState(active);
   const [successTitle, setSuccessTitle] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [successDetails, setScuccessDetails] = useState('');
   const { user } = useAuthContext();
 
   const handleStepChange = (nextStep: number) => {
@@ -64,14 +65,17 @@ export default function DeviceProvisioning() {
       .then((response) => {
         if (response.status === 201) {
           setSuccessTitle('Success');
+          setScuccessDetails(response.data.preSharedKey);
           setSuccessMessage(response.data.message);
         } else {
           setSuccessTitle('Error');
+          setScuccessDetails('');
           setSuccessMessage('Something went wrong please try again!');
         }
       })
       .catch((err) => {
         setSuccessTitle('Error');
+        setScuccessDetails('');
         setSuccessMessage('Something went wrong please try again!');
         showNotification(err.status, err.response.data.message);
       })
@@ -172,6 +176,7 @@ export default function DeviceProvisioning() {
               <div style={{ 'width': '50%', minHeight: '60vh' }}>
                 <Flex direction='column' align='center' justify='center'>
                   <Text>{successMessage}</Text>
+                  <Text>{successDetails}</Text>
                 </Flex>
               </div>
             </Flex>
