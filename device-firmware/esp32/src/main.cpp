@@ -1,13 +1,18 @@
 #include "Application.h"
 #include "HTTPSHandler.hpp"
+#include "ProvisioningCredentials.hpp"
 #include "WiFiHandler.h"
 #include <Arduino.h>
 #include <HttpsOTAUpdate.h>
+#include <Preferences.h>
 #include <WiFiClientSecure.h>
 #include <stdint.h>
 
+static const char *firmwareVersion = "1.0.0";
 static const char *ssid = "Wokwi-GUEST";
 static const char *password = "";
+static const char *preSharedKey =
+    "530635c845c3db3aeeb4dbbc6c9567ef9ed31565374918af2cf1573e80e8cdfb";
 
 static const char *url =
     "https://dl.dropboxusercontent.com/s/7y8nasjntpp0l6g/firmware.bin";
@@ -72,17 +77,60 @@ const char *test_root_ca =
     "-----END CERTIFICATE-----\n";
 
 WiFiClientSecure client;
+Preferences preferences;
 HTTPSHandler httpsHandlder(&client);
+ProvisioningCredentials provisioningCredentials(&preferences);
+
+static HttpsOTAStatus_t otastatus;
+
+void HttpEvent(HttpEvent_t *event) {
+  switch (event->event_id) {
+  case HTTP_EVENT_ERROR:
+    Serial.println("Http Event Error");
+    break;
+  case HTTP_EVENT_ON_CONNECTED:
+    Serial.println("Http Event On Connected");
+    break;
+  case HTTP_EVENT_HEADER_SENT:
+    Serial.println("Http Event Header Sent");
+    break;
+  case HTTP_EVENT_ON_HEADER:
+    Serial.printf("Http Event On Header, key=%s, value=%s\n", event->header_key,
+                  event->header_value);
+    break;
+  case HTTP_EVENT_ON_DATA:
+    break;
+  case HTTP_EVENT_ON_FINISH:
+    Serial.println("Http Event On Finish");
+    break;
+  case HTTP_EVENT_DISCONNECTED:
+    Serial.println("Http Event Disconnected");
+    break;
+  }
+}
+
+String savedPreSharedKey;
+bool isProvisioned;
 
 void setup() {
   Serial.begin(115200);
   Serial.printf("Booted %s with ChipID - %" PRIu64 "\n", ESP.getChipModel(),
                 ESP.getEfuseMac());
+
   appInitialize();
+
+  provisioningCredentials.initializePreferences();
+  provisioningCredentials.setCredentials(savedPreSharedKey, isProvisioned,
+                                         preSharedKey);
+  savedPreSharedKey = provisioningCredentials.getPreSharedKey();
+  isProvisioned = provisioningCredentials.isProvisionedDevice();
+  provisioningCredentials.closePreferences();
+
   connectWifi(ssid, password);
   httpsHandlder.initializeHttpsClient(test_root_ca);
   httpsHandlder.connectHttpsClient(server);
-  httpsHandlder.getRequest();
+  httpsHandlder.putRequest();
+  httpsHandlder.checkNewFirmware(firmwareVersion);
 }
 
 void loop() {

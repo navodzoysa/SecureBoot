@@ -23,10 +23,8 @@ public:
     return false;
   }
 
-  void getRequest() {
-    this->client->println("GET "
-                "https://secureboot.online/api/firmware/download/"
-                "6453762dfe6016a87aba173b HTTP/1.0");
+  void checkNewFirmware(const char *firmwareVersion) {
+    this->client->printf("GET https://secureboot.online/api/firmware/latest/esp32?currentVersion=%s HTTP/1.0\n", firmwareVersion);
     this->client->println("Host: secureboot.online");
     this->client->println("Connection: close");
     this->client->println();
