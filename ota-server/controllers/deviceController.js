@@ -62,7 +62,6 @@ const addDeviceInfo = asyncHandler(async (req, res) => {
 		deviceName: req.body.deviceName,
 		deviceStatus: req.body.deviceStatus,
 		deviceFirmwareVersion: req.body.deviceFirmwareVersion,
-		user: req.user.id,
 	})
 	const savedDeviceInfo = await deviceInfo.save();
 
@@ -80,4 +79,9 @@ const addDeviceInfo = asyncHandler(async (req, res) => {
 	}
 })
 
-module.exports = { getDevices, getDeviceById, provisionDevice, addDeviceInfo };
+const updateDevice = asyncHandler(async (req, res) => {
+	const { preSharedKey } = req.body;
+	res.status(200).json(preSharedKey);
+})
+
+module.exports = { getDevices, getDeviceById, provisionDevice, addDeviceInfo, updateDevice };

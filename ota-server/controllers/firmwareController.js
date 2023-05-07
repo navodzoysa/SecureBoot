@@ -78,7 +78,7 @@ const uploadFirmware = asyncHandler(async (req, res) => {
 })
 
 const downloadFirmware = asyncHandler(async (req, res) => {
-	const data = await Firmware.findOne({ _id: req.params.firmwareId, user: req.user.id });
+	const data = await Firmware.findOne({ _id: req.params.firmwareId });
 
 	if (data) {
 		res.status(200);
