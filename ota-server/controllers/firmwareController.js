@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Firmware = require('../db/models/firmware');
+const Device = require('../db/models/device');
 const path = require('path');
 
 const getFirmwares = asyncHandler(async (req, res) => {
@@ -31,7 +32,8 @@ const uploadFirmware = asyncHandler(async (req, res) => {
 	}
 	const existingFirmware = await Firmware.findOne({
 		firmwareSupportedDevice: deviceType.toLowerCase(),
-		firmwareVersion: firmwareVersion
+		firmwareVersion: firmwareVersion,
+		user: req.user.id
 	});
 	if (existingFirmware) {
 		res.status(400);
@@ -78,12 +80,29 @@ const uploadFirmware = asyncHandler(async (req, res) => {
 })
 
 const downloadFirmware = asyncHandler(async (req, res) => {
-	const data = await Firmware.findOne({ _id: req.params.firmwareId });
+	const { deviceType } = req.params;
+	const { latestVersion, preSharedKey } = req.query;
 
-	if (data) {
+	if (!deviceType || !latestVersion || !preSharedKey) {
+		res.status(400);
+		throw new Error('Device tpye, current firmware version or pre shared key is missing.');
+	}
+	const device = await Device.findOne({ preSharedKey: preSharedKey });
+
+	const firmware = await Firmware.findOne({
+		firmwareSupportedDevice: deviceType,
+		firmwareVersion: latestVersion,
+		user: device.user.valueOf(),
+	});
+
+	if (firmware) {
 		res.status(200);
-		res.set({ 'Content-Type': data.firmwareMimeType, 'Content-Disposition': 'attachment; file=' + data.firmwareName });
-		res.sendFile(path.join(__dirname, '../' + data.firmwaredestination, data.firmwareBinaryPathName))
+		res.set({
+			'Content-Type': firmware.firmwareMimeType,
+			'Content-Disposition': 'attachment; file=' +
+				firmware.firmwareSupportedDevice + '_firmware_' + firmware.firmwareVersion + '.bin'
+		});
+		res.sendFile(path.join(__dirname, '../' + firmware.firmwaredestination, firmware.firmwareBinaryPathName))
 	} else {
 		res.status(404);
 		throw new Error('Firmware not found.')
@@ -92,17 +111,18 @@ const downloadFirmware = asyncHandler(async (req, res) => {
 
 const getLatestFirmware = asyncHandler(async (req, res) => {
 	const { deviceType } = req.params;
-	const { currentVersion } = req.query;
+	const { currentVersion, preSharedKey } = req.query;
 
-	if (!deviceType || !currentVersion) {
+	if (!deviceType || !currentVersion || !preSharedKey) {
 		res.status(400);
-		throw new Error('Device tpye and current firmware version is missing.');
+		throw new Error('Device tpye, current firmware version or pre shared key is missing.');
 	}
-
+	const device = await Device.findOne({ preSharedKey: preSharedKey });
 	try {
 		let currentAlternateVersion = currentVersion.split('.').join('');
 		const latestFirmware = await Firmware.findOne({
-			firmwareSupportedDevice: deviceType.toLowerCase()
+			firmwareSupportedDevice: deviceType.toLowerCase(),
+			user: device.user.valueOf()
 		}).sort({ firmwareAltVersion: -1 }).limit(1);
 		if (latestFirmware) {
 			if (latestFirmware.firmwareAltVersion > parseInt(currentAlternateVersion)) {

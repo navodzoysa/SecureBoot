@@ -33,7 +33,7 @@ const upload = multer({
 router.get('/', authenticatedRoute, getFirmwares);
 router.get('/:firmwareId', authenticatedRoute, getFirmwareById);
 router.post('/upload', upload.single('file'), authenticatedRoute , uploadFirmware);
-router.get('/download/:firmwareId', downloadFirmware);
+router.get('/download/:deviceType', downloadFirmware);
 router.get('/latest/:deviceType', getLatestFirmware);
 
 module.exports = router;
