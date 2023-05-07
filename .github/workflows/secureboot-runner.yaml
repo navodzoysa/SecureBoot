@@ -29,6 +29,7 @@ jobs:
         echo 'REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}' >> .env
         echo 'COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}' >> .env
         echo 'WHITELISTED_DOMAINS: ${{ secrets.WHITELISTED_DOMAINS }}' >> .env
+        echo 'PRE_SHARED_SECRET: ${{ secrets.PRE_SHARED_SECRET }}' >> .env
         npm install
         cd ../ui
         npm install
