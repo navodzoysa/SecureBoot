@@ -72,7 +72,7 @@ const useStyles = createStyles((theme) => ({
 
   description: {
     color: theme.white,
-    maxWidth: 600,
+    maxWidth: 820,
 
     [theme.fn.smallerThan('sm')]: {
       maxWidth: '100%',
@@ -199,10 +199,10 @@ export default function Login() {
             zIndex={0}
           />
           <Container className={classes.container}>
-            <Title className={classes.headerTitle}>A fully featured React components library</Title>
+            <Title className={classes.headerTitle}>A Secure Firmware Over-The-Air Update Framework for Constrained IoT Devices</Title>
             <Text className={classes.description} size="xl" mt="xl">
-              Build fully functional accessible web applications faster than ever – Mantine includes
-              more than 120 customizable components and hooks to cover you in any situation
+              Manage your IoT devices without having to worry about the security of firmware updates with
+              SecureBoot using state of the art cyber security technologies to secure your device fleet
             </Text>
           </Container>
         </div>
