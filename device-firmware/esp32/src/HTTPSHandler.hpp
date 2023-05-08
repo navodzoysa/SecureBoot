@@ -28,23 +28,25 @@ public:
     return false;
   }
 
-  String checkNewFirmware(const char *currentFirmwareVersion) {
+  const char * checkNewFirmware(const char *currentVersion, const char *preSharedKey) {
     HTTPClient httpClient;
     char url[strlen("https://secureboot.online/api/firmware/latest/"
                     "esp32?currentVersion=") +
-             strlen(currentFirmwareVersion) + strlen(" HTTP/1.0")];
+             strlen(currentVersion) + strlen("&preSharedKey=") + strlen(preSharedKey) + strlen(" HTTP/1.0")];
 
     strcpy(
         url,
         "https://secureboot.online/api/firmware/latest/esp32?currentVersion=");
-    strcat(url, currentFirmwareVersion);
+    strcat(url, currentVersion);
+    strcat(url, "&preSharedKey=");
+    strcat(url, preSharedKey);
     strcat(url, " HTTP/1.0\n");
     const char *latestVersion;
 
     if (httpClient.begin(*this->client, url)) {
       Serial.printf("[HTTPS] GET %s\n", url);
       int httpCode = httpClient.GET();
-      if (httpCode > 0) {
+      if (httpCode == HTTP_CODE_OK) {
         Serial.printf("[HTTPS] GET... code: %d\n", httpCode);
         String payload = httpClient.getString();
         StaticJsonDocument<512> doc;
@@ -52,19 +54,32 @@ public:
         if (error) {
           Serial.print(F("deserializeJson() failed: "));
           Serial.println(error.c_str());
-          return "";
+          return "error";
         }
         latestVersion = doc["firmwareVersion"];
-        Serial.printf("firmware ver - %s\n", latestVersion);
+        Serial.printf("Latest firmware ver: %s\n", latestVersion);
+      } else {
+        latestVersion = "latest";
       }
+    } else {
+      latestVersion = "error";
     }
     httpClient.end();
     this->client->stop();
-    return String(latestVersion);
+    return latestVersion;
   }
 
-  void downloadFirmware(const char *url) {
+  void downloadFirmware(const char * latestVersion, const char *preSharedKey) {
     HTTPClient httpClient;
+
+    char url[strlen("https://secureboot.online/api/firmware/download/esp32?latestVersion=") +
+          strlen(latestVersion) + strlen("&preSharedKey=") + strlen(preSharedKey) + strlen(" HTTP/1.0")];
+
+    strcpy(url, "https://secureboot.online/api/firmware/download/esp32?latestVersion=");
+    strcat(url, latestVersion);
+    strcat(url, "&preSharedKey=");
+    strcat(url, preSharedKey);
+    strcat(url, " HTTP/1.0\n");
 
     if (httpClient.begin(*this->client, url)) {
       Serial.printf("[HTTPS] GET %s\n", url);
