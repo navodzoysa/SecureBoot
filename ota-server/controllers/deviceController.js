@@ -45,6 +45,7 @@ const provisionDevice = asyncHandler(async (req, res) => {
 
 	if (savedDevice) {
 		res.status(201).json({
+			deviceId: savedDevice._id,
 			deviceName: savedDevice.deviceName,
 			user: savedDevice.user,
 			preSharedKey: savedDevice.preSharedKey,
@@ -80,8 +81,31 @@ const addDeviceInfo = asyncHandler(async (req, res) => {
 })
 
 const updateDevice = asyncHandler(async (req, res) => {
-	const { preSharedKey } = req.body;
-	res.status(200).json(preSharedKey);
+	const { deviceId, preSharedKey, provisioned } = req.body;
+
+	const device = await Device.findOne({ _id: deviceId, preSharedKey: preSharedKey });
+
+	try { 
+		if (device) {
+			const newDevice = new Device({
+				provisioned: provisioned,
+			});
+			const updateDevice = await Device.updateOne({ id: deviceId }, newDevice);
+			if (updateDevice) {
+				res.status(204).json({
+					deviceId: updateDevice._id,
+					provsioned: updateDevice.provisioned,
+					message: 'Device updated successfully.'
+				});
+			}
+		} else {
+			res.status(404);
+			throw new Error('Device not found to update.');
+		}
+	} catch (err) {
+		res.status(400);
+		throw new Error(err.message);
+	}
 })
 
 module.exports = { getDevices, getDeviceById, provisionDevice, addDeviceInfo, updateDevice };
