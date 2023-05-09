@@ -1,10 +1,9 @@
+import { createStyles, getStylesRef, Group, rem, Tabs } from '@mantine/core';
 import { DataTable } from 'mantine-datatable';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuthContext } from '../../context/AuthContext';
-import { Card, createStyles, getStylesRef, Group, rem, Tabs, Text } from '@mantine/core';
-import UploadFirmware from './UploadFirmware';
-import { IconSquarePlus, IconListDetails  } from '@tabler/icons-react';
+import { IconListDetails, IconSquarePlus } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { showNotification } from '../../components/Notification';
 
@@ -18,25 +17,28 @@ const useStyles = createStyles((theme) => ({
 	},
 }));
 
-export default function FirmwareTable() {
+export default function GroupTable() {
 	const { classes } = useStyles();
-	const [firmwareList, setFirmwareList] = useState<any[]>([]);
+	const [groupDetails, setGroupDetails] = useState<any[]>([]);
 	const [fetching, isFetching] = useState<boolean>(true);
 	const [tabValue, setTabValue] = useState('view');
 	const { user, isAuthenticated } = useAuthContext();
 	const navigate = useNavigate();
 
-	const getFirmwareList = useCallback(async () => {
+	const getGroups = useCallback(async () => {
 		isFetching(true);
-		await axios.get('/api/firmware', {headers: { Authorization: 'Bearer ' + user.accessToken }})
+		await axios.get('/api/groups', {headers: { Authorization: 'Bearer ' + user.accessToken }})
 			.then((response) => {
 				if (response.status === 200) {
-					setFirmwareList(response.data);
+					if (Array.isArray(response.data)) {
+						setGroupDetails(response.data);
+					}
 				} else {
 					showNotification(response.status, response.data.message);
 				}
 			})
 			.catch((err) => {
+				console.log('err ', err)
 				if (err.response.status !== 404) {
 					showNotification(err.reponse.status, err.response.data.message);
 				}
@@ -44,27 +46,20 @@ export default function FirmwareTable() {
 			.finally(() => {
 				isFetching(false);
 			})
-	}, [user, isFetching, setFirmwareList])
+	}, [user, isFetching, setGroupDetails])
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			getFirmwareList();
+			getGroups();
 		}
-	}, [isAuthenticated, getFirmwareList])
+	}, [isAuthenticated, getGroups]);
 
 	const getCurrentTab = (value: any) => {
 		setTabValue(value);
 	}
 
-	let viewFirmware = (value: any) => {
-		navigate('/firmware/' + value);
-		// await axios.get('/api/firmware/download/' + value, { headers: { Authorization: 'Bearer ' + user.accessToken } })
-		// 	.then((response) => {
-		// 		console.log('firmware downloaded');
-		// 	})
-		// 	.catch((err) => {
-		// 		console.log('error downloading firmware');
-		// 	})
+	let viewGroup = (value: any) => {
+		navigate('/groups/' + value);
 	}
 
 	return (
@@ -73,12 +68,12 @@ export default function FirmwareTable() {
 				<Tabs.List>
 					<Tabs.Tab value="view">
 						<Group spacing='xs'>
-							<IconListDetails size='1.05rem' className={classes.linkIcon} />View Firmware
+							<IconListDetails size='1.05rem' className={classes.linkIcon} />View Groups
 						</Group>
 					</Tabs.Tab>
 					<Tabs.Tab value="add">
 						<Group spacing='xs'>
-							<IconSquarePlus size='1.05rem' className={classes.linkIcon} />Add Firmware
+							<IconSquarePlus size='1.05rem' className={classes.linkIcon} />Add Group
 						</Group>
 					</Tabs.Tab>
 				</Tabs.List>
@@ -96,42 +91,28 @@ export default function FirmwareTable() {
 					striped
 					highlightOnHover
 					// provide data
-					records={firmwareList}
+					records={groupDetails}
 					idAccessor="_id"
 					// define columns
 					columns={[
 						{
-							accessor: 'firmwareName',
-							title: 'Firmware'
+							accessor: 'groupName',
+							title: 'Group Name'
 						},
 						{
-							accessor: 'firmwareSupportedDevice',
-							title: 'Supported Device',
-							render: ({ firmwareSupportedDevice }) => (
-								<Text>
-									{firmwareSupportedDevice ? firmwareSupportedDevice.toUpperCase() : 'Unknown'}
-								</Text>
-							),
-						},
-						{
-							accessor: 'firmwareVersion',
-							title: 'Version'
+							accessor: 'deviceCount',
+							title: 'Device Count',
 						},
 					]}
 					// execute this callback when a row is clicked
-					onRowClick={({ _id }) => viewFirmware(_id)}
+					onRowClick={({ _id }) => viewGroup(_id)}
 				/>
 			)}
 			{tabValue === "add" && (
-				<Card
-					style={{ minHeight: '78vh' }}
-					withBorder
-					shadow='md'
-					radius='md'
-				>
-					<UploadFirmware></UploadFirmware>
-				</Card>
+				<div style={{'flex': 'display'}}>
+					<div></div>
+				</div>
 			)}
 		</div>
 	);
- }
+}

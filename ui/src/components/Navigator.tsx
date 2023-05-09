@@ -4,11 +4,18 @@ import {
   IconLogout,
   IconDeviceDesktopAnalytics,
   IconCpu,
+  IconBroadcast,
+  IconQrcode,
+  IconBox,
+  IconBinaryTree2,
+  IconCloudDataConnection,
 } from '@tabler/icons-react';
 import axios from 'axios';
 import { useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
+import { UserButton } from '../views/user/UserButton';
+import { showNotification } from './Notification';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -66,8 +73,13 @@ const useStyles = createStyles((theme) => ({
 }));
 
 const data = [
-  { link: '/devices', label: 'Devices', icon: IconDeviceDesktopAnalytics },
-  { link: '/firmware', label: 'Firmware', icon: IconCpu  },
+  { link: '/welcome', label: 'Welcome', icon: IconBroadcast },
+  { link: '/dashboard', label: 'Dashboard', icon: IconDeviceDesktopAnalytics },
+  { link: '/devices', label: 'Devices', icon: IconCpu },
+  { link: '/firmware', label: 'Firmware', icon: IconBox },
+  { link: '/updates', label: 'Updates', icon: IconCloudDataConnection },
+  { link: '/groups', label: 'Groups', icon: IconBinaryTree2 },
+  { link: '/provisioning', label: 'Provisioning', icon: IconQrcode },
   { link: '/settings', label: 'Settings', icon: IconSettings },
 ];
 
@@ -77,16 +89,10 @@ export default function Navigator() {
 
   const logOutUser = useCallback(async () => {
     await axios.post('/api/users/logout', null, { headers: { Authorization: 'Bearer ' + user.accessToken }})
-      .then((response) => {
-        if (response.status === 200) {
-          setUser(null)
-          setisAuthenticated(false);
-        } else {
-          setUser(null);
-          setisAuthenticated(false);
-        }
-      })
       .catch((err) => {
+        showNotification(err.status, err.response.data.message);
+      })
+      .finally(() => {
         setUser(null);
         setisAuthenticated(false);
       })
@@ -103,9 +109,13 @@ export default function Navigator() {
   ));
 
   return (
-    <Navbar height={500} width={{ sm: 200, lg: 300 }} p="md">
+    <Navbar height={860} width={{ sm: 200, lg: 300 }} p="md">
       <Navbar.Section grow>
         {links}
+      </Navbar.Section>
+
+      <Navbar.Section>
+        <UserButton name={user.firstName + " " + user.lastName} email={user.email} />
       </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>

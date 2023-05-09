@@ -1,20 +1,20 @@
-import { Container, Text, Paper, Card, Badge, Button, Group, Image, Flex } from '@mantine/core';
+import { Container, Text, Paper, Card, Badge, Button, Group as MantineGroup, Image, Flex } from '@mantine/core';
 import axios from 'axios';
 import { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
 import { showNotification } from '../../components/Notification';
 
-export default function Device() {
+export default function Group() {
 	const { user, isAuthenticated } = useAuthContext();
 	const params = useParams();
-	const [deviceDetails, setDeviceDetails] = useState<any>();
+	const [groupDetails, setGroupDetails] = useState<any>();
 
-	const getDeviceDetailsById = useCallback(async () => {
-		await axios.get('/api/devices/device/' + params.id, {headers: { Authorization: 'Bearer ' + user.accessToken }})
+	const getGroupDetailsById = useCallback(async () => {
+		await axios.get('/api/groups/group/' + params.id, {headers: { Authorization: 'Bearer ' + user.accessToken }})
 			.then((response) => {
 				if (response.status === 200) {
-					setDeviceDetails(response.data);
+					setGroupDetails(response.data);
 				} else {
 					showNotification(response.status, response.data.message);
 				}
@@ -22,13 +22,13 @@ export default function Device() {
 			.catch((err) => {
 				showNotification(err.status, err.response.data.message);
 			})
-	}, [params, user, setDeviceDetails])
+	}, [params, user, setGroupDetails])
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			getDeviceDetailsById();
+			getGroupDetailsById();
 		}
-	}, [isAuthenticated, getDeviceDetailsById])
+	}, [isAuthenticated, getGroupDetailsById])
 
 	return (
 		<Container size='xl'>
@@ -49,12 +49,12 @@ export default function Device() {
 					/>
 				</Card.Section>
 
-				<Group position="apart" mt="md" mb="xs">
+				<MantineGroup position="apart" mt="md" mb="xs">
 					<Text weight={500}>Norway Fjord Adventures</Text>
 					<Badge color="pink" variant="light">
 					On Sale
 					</Badge>
-				</Group>
+				</MantineGroup>
 
 				<Text size="sm" color="dimmed">
 					With Fjord Tours you can explore more of the magical fjord landscapes with tours and
@@ -65,7 +65,7 @@ export default function Device() {
 					Book classic tour now
 				</Button>
 			</Card>
-			<div>{deviceDetails ? deviceDetails.deviceName : ''}</div>
+			<div>{groupDetails ? groupDetails.groupName : ''}</div>
 			</Flex>
 		</Container>
 	);

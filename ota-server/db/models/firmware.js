@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
 
 const schema = mongoose.Schema({
-	firmwareId: String,
 	firmwareName: String,
 	firmwareSupportedDevice: String,
 	firmwareVersion: String,
-	firmwareBinary: String,
+	firmwareAltVersion: Number,
+	firmwareBinaryPath: String,
+	firmwareBinaryPathName: String,
+	firmwareMimeType: String,
+	firmwaredestination: String,
+	firmwareSize: String,
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,
@@ -14,6 +18,15 @@ const schema = mongoose.Schema({
 },
 {
 	timestamps: true	
+})
+
+schema.set("toJSON", {
+  transform: function (doc, ret, options) {
+	delete ret.firmwareBinaryPath;
+	delete ret.firmwareBinaryPathName;
+	delete ret.firmwaredestination;
+	return ret
+  },
 })
 
 module.exports = mongoose.model("Firmware", schema);

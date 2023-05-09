@@ -15,11 +15,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: | 
-        export NODE_ENV=production
         export NVM_DIR=~/.nvm
         source ~/.nvm/nvm.sh
         cd ota-server
+        mkdir -p uploads
         touch .env
+        echo 'NODE_ENV: ${{ vars.NODE_ENV }}' >> .env
         echo 'DATABASE_URL: ${{ secrets.DATABASE_URL }}' >> .env
         echo 'SECRET_KEY: ${{ secrets.SECRET_KEY }}' >> .env
         echo 'JWT_KEY: ${{ secrets.JWT_KEY }}' >> .env
@@ -28,6 +29,7 @@ jobs:
         echo 'REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}' >> .env
         echo 'COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}' >> .env
         echo 'WHITELISTED_DOMAINS: ${{ secrets.WHITELISTED_DOMAINS }}' >> .env
+        echo 'PRE_SHARED_SECRET: ${{ secrets.PRE_SHARED_SECRET }}' >> .env
         npm install
         cd ../ui
         npm install
