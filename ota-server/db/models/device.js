@@ -16,6 +16,9 @@ const schema = mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	provisioned: {
+		type: Boolean,
+	},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		required: true,

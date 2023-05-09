@@ -173,6 +173,46 @@ public:
     }
   }
 
-  void postRequest();
-  void putRequest();
+  void updateDevice(const char *deviceId, const char *preSharedKey) {
+    HTTPClient httpClient;
+
+    char url[strlen("https://secureboot.online/api/devices/update-device/") + strlen(deviceId) +
+          strlen("?preSharedKey=") + strlen(preSharedKey) + strlen(" HTTP/1.0")];
+
+    strcpy(url, "https://secureboot.online/api/devices/update-device/");
+    strcat(url, deviceId);
+    strcat(url, "?preSharedKey=");
+    strcat(url, preSharedKey);
+    strcat(url, " HTTP/1.0\n");
+
+    if (httpClient.begin(*this->client, url)) {
+      Serial.printf("[HTTPS] PUT %s\n", url);
+      String put = "";
+      StaticJsonDocument<192> doc;
+
+      doc["deviceId"] = deviceId;
+      doc["preSharedKey"] = preSharedKey;
+      doc["provisioned"] = true;
+
+      serializeJson(doc, put);
+      int httpCode = httpClient.PUT(put);
+      if (httpCode == HTTP_CODE_OK) {
+        Serial.printf("[HTTPS] PUT... code: %d\n", httpCode);
+        String payload = httpClient.getString();
+        StaticJsonDocument<512> doc;
+        DeserializationError error = deserializeJson(doc, payload);
+        if (error) {
+          Serial.print(F("deserializeJson() failed: "));
+          Serial.println(error.c_str());
+          return;
+        }
+      } else {
+        Serial.println("Error sending request");
+      }
+    } else {
+      Serial.println("Error connecting to server.");
+    }
+    httpClient.end();
+    this->client->stop();
+  }
 };
