@@ -10,6 +10,7 @@
 static const char *firmwareVersion = "1.0.0";
 static const char *ssid = "Wokwi-GUEST";
 static const char *password = "";
+static const char *deviceId = "645802e05f0f8c9be98b6f5a";
 static const char *preSharedKey =
     "d427fe8e886023c5995649a325adfa61a274141cade253aa772f6334a635d35d";
 
@@ -72,6 +73,8 @@ void setup() {
 
   connectWifi(ssid, password);
   httpsHandlder.initializeHttpsClient(root_ca);
+
+  httpsHandlder.updateDevice(deviceId, preSharedKey);
 
   String latestVersion = httpsHandlder.checkNewFirmware(
       firmwareVersion, savedPreSharedKey.c_str());
